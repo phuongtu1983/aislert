@@ -47,14 +47,18 @@ public class ConfigServlet extends HttpServlet {
             throws ServletException, IOException {
         try {
             String fileName = this.getServletContext().getRealPath("/config.properties");
-            String redDistance = request.getParameter("red_dis");
-            if (redDistance != null && !redDistance.isEmpty()) {
-                Properties props = new Properties();
-                props.setProperty("red_dis", request.getParameter("red_dis"));
-                props.setProperty("yello_dis", request.getParameter("yello_dis"));
-                props.setProperty("angten_lat", request.getParameter("angten_lat"));
-                props.setProperty("angten_long", request.getParameter("angten_long"));
-                ConfigUtil.saveConfig(fileName, props);
+            String start_time = request.getParameter("start_time");
+            if (start_time != null && !start_time.isEmpty()) {
+                try {
+                    Properties props = new Properties();
+                    props.setProperty("start_time", request.getParameter("start_time"));
+                    props.setProperty("end_time", request.getParameter("end_time"));
+                    ConfigUtil.saveConfig(fileName, props);
+                    AISObjectList.setFromDate((String) props.get("start_time"));
+                    AISObjectList.setToDate((String) props.get("end_time"));
+                } catch (Exception ex) {
+
+                }
             }
             Properties props = ConfigUtil.readConfig(fileName);
             request.setAttribute("properties", props);

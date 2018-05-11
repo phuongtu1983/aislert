@@ -6,7 +6,10 @@
 package com.buoctien.aisalert;
 
 import com.buoctien.aisalert.bean.AISBean;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  *
@@ -15,6 +18,33 @@ import java.util.ArrayList;
 public class AISObjectList {
 
     private final static ArrayList aisList = new ArrayList();
+    private static Date fromDate = null;
+    private static Date toDate = null;
+
+    public AISObjectList(String _fromDate, String _toDate) {
+        try {
+            fromDate = parseDate(_fromDate);
+            toDate = parseDate(_toDate);
+        } catch (Exception ex) {
+
+        }
+    }
+
+    public static void setFromDate(String _fromDate) {
+        try {
+            fromDate = parseDate(_fromDate);
+        } catch (Exception ex) {
+
+        }
+    }
+
+    public static void setToDate(String _toDate) {
+        try {
+            toDate = parseDate(_toDate);
+        } catch (Exception ex) {
+
+        }
+    }
 
     public static void addObject(AISBean bean) {
         AISBean obj = null;
@@ -79,4 +109,30 @@ public class AISObjectList {
         return alert;
     }
 
+    private static Date parseDate(String date) {
+        try {
+            SimpleDateFormat parser = new SimpleDateFormat("HH:mm");
+            return parser.parse(date);
+        } catch (java.text.ParseException e) {
+        }
+        return null;
+    }
+
+    public static boolean isValidPeriod() {
+        try {
+            Calendar now = Calendar.getInstance();
+            int hour = now.get(Calendar.HOUR_OF_DAY);
+            int minute = now.get(Calendar.MINUTE);
+            String strDate = hour + ":" + minute;
+            Date date = parseDate(strDate);
+            if (date != null && fromDate != null && toDate != null) {
+                if (fromDate.before(date) && toDate.after(date)) {
+                    return true;
+                }
+            }
+        } catch (Exception ex) {
+
+        }
+        return false;
+    }
 }

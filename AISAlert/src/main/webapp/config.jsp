@@ -13,7 +13,7 @@
         <title>Configure parameters</title>
     </head>
     <body>
-        <form action="/testweb/ConfigServlet.do" method="POST">
+        <form action="/aisalert/ConfigServlet.do" method="POST">
             <table style="border-width: 0px">
                 <%
                     Properties props = (Properties) request.getAttribute("properties");
@@ -24,17 +24,11 @@
                         String value = props.getProperty(key);
                         String strName = "";
                         switch (key) {
-                            case "red_dis":
-                                strName = "<td height='100' style='padding-right: 10px'>Khoảng cách bật đèn đỏ</td>";
+                            case "start_time":
+                                strName = "<td height='100' style='padding-right: 10px'>Từ thời điểm</td>";
                                 break;
-                            case "yello_dis":
-                                strName = "<td height='100' style='padding-right: 10px'>Khoảng cách bật đèn vàng</td>";
-                                break;
-                            case "angten_lat":
-                                strName = "<td height='100' style='padding-right: 10px'>Vĩ độ angten (latitude)</td>";
-                                break;
-                            case "angten_long":
-                                strName = "<td height='100' style='padding-right: 10px'>Kinh độ angten (longitude)</td>";
+                            case "end_time":
+                                strName = "<td height='100' style='padding-right: 10px'>Đến thời điểm</td>";
                                 break;
                         }
                         if (!strName.isEmpty()) {
