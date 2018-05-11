@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+    <servlet>
+        <servlet-name>OnLoadServlet</servlet-name>
+        <servlet-class>com.buoctien.aisalert.OnLoadServlet</servlet-class>
+        <load-on-startup>0</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>ConfigServlet</servlet-name>
+        <servlet-class>com.buoctien.aisalert.ConfigServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>MapServlet</servlet-name>
+        <servlet-class>com.buoctien.aisalert.MapServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AISMapJsonServlet</servlet-name>
+        <servlet-class>com.buoctien.aisalert.AISMapJsonServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>OnLoadServlet</servlet-name>
+        <url-pattern>/OnLoadServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ConfigServlet</servlet-name>
+        <url-pattern>/ConfigServlet.do</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>MapServlet</servlet-name>
+        <url-pattern>/MapServlet.do</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AISMapJsonServlet</servlet-name>
+        <url-pattern>/AISMapJsonServlet</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+</web-app>
