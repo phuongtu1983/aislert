@@ -17,7 +17,13 @@ and open the template in the editor.
     </head>
     <body>
         <table style="width: 100%">
-            <tr><td><span id="alertSpan">Loai bao dong</span></td></tr>
+            <tr>
+                <td>
+                    <span id="alertSpan">Loại đèn cảnh báo</span>
+                     <button onclick="enableGetAISAjax()">Mở theo dõi bản đồ</button> 
+                     <button onclick="disableGetAISAjax()">Tắt theo dõi bản đồ</button> 
+                </td>
+            </tr>
             <tr><td><p id="map"></p></td></tr>
         </table>
     </body>

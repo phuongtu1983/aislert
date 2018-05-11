@@ -1,6 +1,6 @@
 var map;
 var markers = [];
-
+var ajaxInterval = null;
 $(document).ready(function () {
     success();
 });
@@ -35,27 +35,28 @@ function success()
         {lat: 10.666268527714273, lng: 106.79630532860756}
     ];
     drawPolygon(triangleCoords, 'red');
-/*
-    // yellow
-    drawCircle(10.66260333459467, 106.79513587939925, 520);
-    drawCircle(10.662226400982233, 106.79475031443121, 520);
-    drawCircle(10.663322933796216, 106.79588287214222, 520);
-    drawCircle(10.663760491420474, 106.79634085958105, 520);
-    drawCircle(10.664184868961435, 106.79679543725299, 520);
-    
-    //red
-    drawCircle(10.66260333459467, 106.79513587939925, 200);
-    drawCircle(10.662226400982233, 106.79475031443121, 200);
-    drawCircle(10.663322933796216, 106.79588287214222, 200);
-    drawCircle(10.662978949781976, 106.79552010416523, 200);
-    drawCircle(10.663760491420474, 106.79634085958105, 200);
-    drawCircle(10.663546984470017, 106.79615588901048, 200);
-    drawCircle(10.663977952040657, 106.7965698537846, 200);
-    drawCircle(10.664393792645135, 106.79700437380211, 200);
-    drawCircle(10.664600020294783, 106.79722331065, 200);
-    drawCircle(10.664184868961435, 106.79679543725299, 200);
-*/
-    window.setInterval(getAISAjax, 5000);
+    /*
+     // yellow
+     drawCircle(10.66260333459467, 106.79513587939925, 520);
+     drawCircle(10.662226400982233, 106.79475031443121, 520);
+     drawCircle(10.663322933796216, 106.79588287214222, 520);
+     drawCircle(10.663760491420474, 106.79634085958105, 520);
+     drawCircle(10.664184868961435, 106.79679543725299, 520);
+     
+     //red
+     drawCircle(10.66260333459467, 106.79513587939925, 200);
+     drawCircle(10.662226400982233, 106.79475031443121, 200);
+     drawCircle(10.663322933796216, 106.79588287214222, 200);
+     drawCircle(10.662978949781976, 106.79552010416523, 200);
+     drawCircle(10.663760491420474, 106.79634085958105, 200);
+     drawCircle(10.663546984470017, 106.79615588901048, 200);
+     drawCircle(10.663977952040657, 106.7965698537846, 200);
+     drawCircle(10.664393792645135, 106.79700437380211, 200);
+     drawCircle(10.664600020294783, 106.79722331065, 200);
+     drawCircle(10.664184868961435, 106.79679543725299, 200);
+     */
+    drawCircle(10.663402010340304, 106.79608941078186, 1000);
+    enableGetAISAjax();
 }
 
 function getAISAjax() {
@@ -70,7 +71,7 @@ function getAISAjax() {
             clearMarkers();
             markers = [];
             var data = json.aisList;
-            $( "#alertSpan" ).css("background-color", json.alert);
+            $("#alertSpan").css("background-color", json.alert);
             $.each(data, function (index, boat) {
                 var location = new google.maps.LatLng(parseFloat(boat.latitude), parseFloat(boat.longtitude));
                 addMarker(location, boat.name);
@@ -125,4 +126,18 @@ function drawCircle(lat, lon, radius) {
         radius: radius
     });
 
+}
+
+function enableGetAISAjax() {
+    if (ajaxInterval == null)
+        ajaxInterval = window.setInterval(getAISAjax, 5000);
+}
+
+function disableGetAISAjax() {
+    if (ajaxInterval != null) {
+        window.clearInterval(ajaxInterval);
+        ajaxInterval = null;
+        alert('Đã tắt');
+    }
+    clearMarkers();
 }
