@@ -5,9 +5,8 @@
  */
 package com.buoctien.aisalert;
 
-import com.buoctien.aisalert.util.ConfigUtil;
+import com.buoctien.aisalert.util.SerialUtil;
 import gnu.io.SerialPort;
-import java.util.Properties;
 import javax.servlet.http.HttpServlet;
 
 /**
@@ -23,31 +22,30 @@ public class OnLoadServlet extends HttpServlet {
     public void init() {
         System.out.println("On Load Servlet start");
         try {
-//            if (dataPort == null) {
-//                dataPort = (new SerialUtil()).getSerialPort();
-//            }
-//            if (dataPort != null) {
-//            String fileName = this.getServletContext().getRealPath("/ais_sample4.txt");
-            String writtenFileName = this.getServletContext().getRealPath("/result.txt");
-            if (aisTimer == null) {
-
-                String fileName = this.getServletContext().getRealPath("/config.properties");
-                String fromDate = "", toDate = "";
-                try {
-                    Properties props = ConfigUtil.readConfig(fileName);
-                    if (!props.isEmpty()) {
-                        fromDate = (String) props.get("start_time");
-                        toDate = (String) props.get("end_time");
-                    }
-                } catch (Exception ex) {
-
-                }
-                new AISObjectList(fromDate, toDate);
-                aisTimer = new AISTimerTask(dataPort, "", writtenFileName);
-                aisTimer.run();
-                aisTimer.schedule(0, 10000);
+            if (dataPort == null) {
+                dataPort = (new SerialUtil()).getSerialPort();
             }
-//            }
+            if (dataPort != null) {
+                String writtenFileName = this.getServletContext().getRealPath("/result.txt");
+                if (aisTimer == null) {
+
+//                    String fileName = this.getServletContext().getRealPath("/config.properties");
+                    String fromDate = "", toDate = "";
+//                    try {
+//                        Properties props = ConfigUtil.readConfig(fileName);
+//                        if (!props.isEmpty()) {
+//                            fromDate = (String) props.get("start_time");
+//                            toDate = (String) props.get("end_time");
+//                        }
+//                    } catch (Exception ex) {
+//
+//                    }
+                    new AISObjectList(fromDate, toDate);
+                    aisTimer = new AISTimerTask(dataPort, "", writtenFileName);
+                    aisTimer.run();
+                    aisTimer.schedule(0, 5000);
+                }
+            }
         } catch (Exception ex) {
         }
         System.out.println("On Load Servlet started");

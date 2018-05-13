@@ -11,7 +11,6 @@ import com.buoctien.aisalert.bean.AISBean;
 import com.buoctien.aisalert.bean.StaticBean;
 import com.buoctien.aisalert.util.AISUtil;
 import com.buoctien.aisalert.util.ArduinoUtil;
-import com.buoctien.aisalert.util.FileUtil;
 import dk.dma.ais.filter.DownSampleFilter;
 import dk.dma.ais.filter.DuplicateFilter;
 import dk.dma.ais.filter.MessageHandlerFilter;
@@ -40,7 +39,6 @@ public class AISThread extends Thread {
     private final String fileName;
     private final String writtenFileName;
     private boolean stoped;
-    private String currentAlert = ""; // ''=off; 'RED'=bao dong do; 'YELLOW'=bao dong vang
 
     private ArrayList emulatorAISData = new ArrayList();
 
@@ -55,12 +53,11 @@ public class AISThread extends Thread {
     public void run() {
         try {
             System.out.println("Thread ID: " + this.getId());
-//            Properties props = ConfigUtil.readConfig(fileName);
-//            runFromFile2();
+            runFromFile2();
 //            runFromSerialPort();
-            createEmulatorData();
-            handleEmulateData();
-//            this.stoped = true;
+//            createEmulatorData();
+//            handleEmulateData();
+            this.stoped = true;
         } catch (Exception ex) {
             System.out.println("run : " + ex);
         }
@@ -68,6 +65,25 @@ public class AISThread extends Thread {
 
     public boolean isStoped() {
         return stoped;
+    }
+
+    private void runFromFile2() {
+        try {
+            AisReader reader = AISUtil.readFromFile(fileName);
+            if (reader != null) {
+                reader.registerHandler(new Consumer<AisMessage>() {
+                    @Override
+                    public void accept(AisMessage aisMessage) {
+                        aisMessageHandle(aisMessage);
+                    }
+                });
+                reader.start();
+                reader.join();
+            }
+
+        } catch (Exception ex) {
+
+        }
     }
 
     private void runFromSerialPort() {
@@ -170,21 +186,21 @@ public class AISThread extends Thread {
         try {
             String alertArea = AISObjectList.getAlert();
             System.out.println("alertArea: " + alertArea);
-            System.out.println("currentAlert: " + currentAlert);
-            if (alertArea.equals(AISBean.RED_ALERT) && !currentAlert.equals(AISBean.RED_ALERT)) {
+            System.out.println("currentAlert: " + AISObjectList.currentAlert);
+            if (alertArea.equals(AISBean.RED_ALERT) && !AISObjectList.currentAlert.equals(AISBean.RED_ALERT)) {
                 // call Uno_Red
-                currentAlert = alertArea;
+                AISObjectList.currentAlert = alertArea;
                 ArduinoUtil.redAlert();
-            } else if (alertArea.equals(AISBean.YELLOW_ALERT) && !currentAlert.equals(AISBean.YELLOW_ALERT)) {
+            } else if (alertArea.equals(AISBean.YELLOW_ALERT) && !AISObjectList.currentAlert.equals(AISBean.YELLOW_ALERT)) {
                 // call Uno_Yellow
-                currentAlert = alertArea;
+                AISObjectList.currentAlert = alertArea;
                 ArduinoUtil.yellowAlert();
-            } else if (!alertArea.equals("") && !currentAlert.equals("")) {
+            } else if (!alertArea.equals("") && !AISObjectList.currentAlert.equals("")) {
                 // turn off alert
-                currentAlert = "";
+                AISObjectList.currentAlert = "";
                 ArduinoUtil.turnOffAlert();
             }
-            System.out.println("currentAlert 2: " + currentAlert);
+            System.out.println("currentAlert 2: " + AISObjectList.currentAlert);
         } catch (Exception ex) {
             System.out.println("turnAlert : " + ex);
         }
@@ -195,23 +211,10 @@ public class AISThread extends Thread {
         bean.setMMSI(aisMessage.getUserId() + "");
         try {
             Position pos = aisMessage.getValidPosition();
-//            String lat = "";
-//            String lon = "";
             if (pos != null) {
-//                lat = pos.getLatitude() + "; " + pos.getLatitudeAsString();
-//                lon = pos.getLongitude() + "; " + pos.getLongitudeAsString();
                 bean.setPosition(pos);
             }
-//            str += ", userId: " + aisMessage.getUserId()
-//                    + ", lat: " + lat
-//                    + ", lon: " + lon
-//                    + ", pos: " + pos
-//                    + ", str: " + getStrToWrite(aisMessage, bean)
-//                    + ", raw: " + aisMessage.toString()
-//                    + ", time: " + System.currentTimeMillis()
-//                    + ", class: " + aisMessage.getClass();
-//            System.out.println(str);
-//            FileUtil.writeToFile(writtenFileName, str);
+            getStrToWrite(aisMessage, bean);
 //            FileUtil.writeToFile(writtenFileName, aisMessage.reassemble());
         } catch (Exception ex) {
             System.out.println("acceptAisMessage : " + ex);

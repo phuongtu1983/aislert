@@ -130,7 +130,7 @@ function drawCircle(lat, lon, radius) {
 
 function enableGetAISAjax() {
     if (ajaxInterval == null)
-        ajaxInterval = window.setInterval(getAISAjax, 5000);
+        ajaxInterval = window.setInterval(getAISAjax, 2000);
 }
 
 function disableGetAISAjax() {

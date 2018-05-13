@@ -42,11 +42,8 @@ public class AISTimerTask extends TimerTask {
 
     @Override
     public void run() {
-        System.out.println("AISTimer running");
-        System.out.println("aisThread: " + aisThread);
         if (aisThread == null || aisThread.isStoped()) {
             if (AISObjectList.isValidPeriod()) {
-                System.out.println("aisThread: new");
                 aisThread = new AISThread(fileName, writtenFileName, dataPort);
                 aisThread.start();
             }

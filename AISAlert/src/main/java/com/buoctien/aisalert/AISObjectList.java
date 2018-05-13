@@ -20,6 +20,7 @@ public class AISObjectList {
     private final static ArrayList aisList = new ArrayList();
     private static Date fromDate = null;
     private static Date toDate = null;
+    public static String currentAlert = ""; // ''=off; 'RED'=bao dong do; 'YELLOW'=bao dong vang
 
     public AISObjectList(String _fromDate, String _toDate) {
         try {
@@ -119,20 +120,21 @@ public class AISObjectList {
     }
 
     public static boolean isValidPeriod() {
-        try {
-            Calendar now = Calendar.getInstance();
-            int hour = now.get(Calendar.HOUR_OF_DAY);
-            int minute = now.get(Calendar.MINUTE);
-            String strDate = hour + ":" + minute;
-            Date date = parseDate(strDate);
-            if (date != null && fromDate != null && toDate != null) {
-                if (fromDate.before(date) && toDate.after(date)) {
-                    return true;
-                }
-            }
-        } catch (Exception ex) {
-
-        }
-        return false;
+        return true;
+//        try {
+//            Calendar now = Calendar.getInstance();
+//            int hour = now.get(Calendar.HOUR_OF_DAY);
+//            int minute = now.get(Calendar.MINUTE);
+//            String strDate = hour + ":" + minute;
+//            Date date = parseDate(strDate);
+//            if (date != null && fromDate != null && toDate != null) {
+//                if (fromDate.before(date) && toDate.after(date)) {
+//                    return true;
+//                }
+//            }
+//        } catch (Exception ex) {
+//
+//        }
+//        return false;
     }
 }
