@@ -38,8 +38,13 @@ public class AISBean {
         return alertArea;
     }
 
-    public void setAlertArea(String alertArea) {
+    public boolean setAlertArea(String alertArea) {
+        boolean result = true;
+        if (alertArea.equals(this.alertArea)) {
+            result = false;
+        }
         this.alertArea = alertArea;
+        return result;
     }
 
     public void setMMSI(String MMSI) {

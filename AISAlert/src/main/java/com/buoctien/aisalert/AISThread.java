@@ -11,6 +11,7 @@ import com.buoctien.aisalert.bean.AISBean;
 import com.buoctien.aisalert.bean.StaticBean;
 import com.buoctien.aisalert.util.AISUtil;
 import com.buoctien.aisalert.util.ArduinoUtil;
+import com.buoctien.aisalert.util.FileUtil;
 import dk.dma.ais.filter.DownSampleFilter;
 import dk.dma.ais.filter.DuplicateFilter;
 import dk.dma.ais.filter.MessageHandlerFilter;
@@ -52,14 +53,14 @@ public class AISThread extends Thread {
     @Override
     public void run() {
         try {
-            System.out.println("Thread ID: " + this.getId());
-            runFromFile2();
+//            runFromFile2();
 //            runFromSerialPort();
-//            createEmulatorData();
-//            handleEmulateData();
-            this.stoped = true;
+            createEmulatorData();
+            handleEmulateData();
+//            this.stoped = true;
         } catch (Exception ex) {
             System.out.println("run : " + ex);
+            FileUtil.writeToFile(fileName, "run : " + ex);
         }
     }
 
@@ -112,6 +113,7 @@ public class AISThread extends Thread {
             }
         } catch (Exception ex) {
             System.out.println("runFromSerialPort : " + ex);
+            FileUtil.writeToFile(fileName, "runFromSerialPort : " + ex);
         }
     }
 
@@ -120,24 +122,37 @@ public class AISThread extends Thread {
             AISBean aisBean = acceptAisMessage(aisMessage);
             String key = String.valueOf(aisBean.getMMSI());
             if (aisBean.getPosition() != null) {
-                boolean result = checkWithinArea200(aisBean.getPosition());
+                boolean result = checkOutsideArea(aisBean.getPosition());
+                if (result) { // nam ngoai khu vuc hien thi
+                    AISBean oldBean = AISObjectList.get(key);
+                    if (oldBean != null) {
+                        AISObjectList.removeObject(oldBean);
+                    }
+                    return;
+                }
+                result = checkWithinArea200(aisBean.getPosition());
                 if (result) { // nam trong khu vuc 200m
-                    System.out.println("Within 200");
+//                    System.out.println("Within 200");
                     AISBean oldBean = AISObjectList.get(key);
                     double distance = getDistance(aisBean.getPosition());
                     if (oldBean != null) {
                         oldBean.setPosition(aisBean.getPosition());
                         oldBean.setNavigation(distance < oldBean.getDistance() ? -1 : 1);
                         oldBean.setDistance(distance);
-                        oldBean.setAlertArea(AISBean.RED_ALERT);
+                        if (oldBean.setAlertArea(AISBean.RED_ALERT)) {
+                            turnAlert();
+                            System.out.println("aisBean : " + aisBean.getMMSI() + ":" + aisBean.getName());
+                        }
                     } else {
                         AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
                                 aisBean.getPosition(), aisBean.getShipType(), AISBean.RED_ALERT, distance));
+                        turnAlert();
+                        System.out.println("aisBean new: " + aisBean.getMMSI() + ":" + aisBean.getName());
                     }
                 } else {// khong nam trong khu vuc 200m
                     result = checkWithinArea500(aisBean.getPosition());
                     if (result) { // nam trong khu vuc tu 200m den 500m
-                        System.out.println("Within 200 - 500");
+//                        System.out.println("Within 200 - 500");
                         AISBean oldBean = AISObjectList.get(key);
                         double distance = getDistance(aisBean.getPosition());
                         if (oldBean != null) {
@@ -145,64 +160,76 @@ public class AISThread extends Thread {
                             oldBean.setNavigation(distance < oldBean.getDistance() ? -1 : 1);
                             oldBean.setDistance(distance);
                             if (oldBean.getNavigation() > 0) {
-                                oldBean.setAlertArea("");
+                                if (oldBean.setAlertArea("")) {
+                                    turnAlert();
+                                    System.out.println("aisBean : " + aisBean.getMMSI() + ":" + aisBean.getName());
+                                }
                             } else {
-                                oldBean.setAlertArea(AISBean.YELLOW_ALERT);
+                                if (oldBean.setAlertArea(AISBean.YELLOW_ALERT)) {
+                                    turnAlert();
+                                    System.out.println("aisBean : " + aisBean.getMMSI() + ":" + aisBean.getName());
+                                }
                             }
                         } else {
                             AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
                                     aisBean.getPosition(), aisBean.getShipType(), AISBean.YELLOW_ALERT, distance));
+                            turnAlert();
+                            System.out.println("aisBean new : " + aisBean.getMMSI() + ":" + aisBean.getName());
                         }
                     } else { // nam ngoai khu vuc 500m
-                        result = checkOutsideArea(aisBean.getPosition());
-                        if (result) { // nam ngoai khu vuc hien thi
-                            AISBean oldBean = AISObjectList.get(key);
-                            if (oldBean != null) {
-                                AISObjectList.removeObject(oldBean);
-                            }
-                        } else {// nam trong khu vuc hien thi (500 - 1000)
-                            AISBean oldBean = AISObjectList.get(key);
-                            double distance = getDistance(aisBean.getPosition());
-                            if (oldBean != null) {
-                                oldBean.setPosition(aisBean.getPosition());
-                                oldBean.setNavigation(distance < oldBean.getDistance() ? -1 : 1);
-                                oldBean.setDistance(distance);
-                                oldBean.setAlertArea("");
-                            } else {
-                                AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
-                                        aisBean.getPosition(), aisBean.getShipType(), "", distance));
-                            }
+                        // nen nam trong khu vuc hien thi (500 - 1000)
+                        AISBean oldBean = AISObjectList.get(key);
+                        double distance = getDistance(aisBean.getPosition());
+                        if (oldBean != null) {
+                            oldBean.setPosition(aisBean.getPosition());
+                            oldBean.setNavigation(distance < oldBean.getDistance() ? -1 : 1);
+                            oldBean.setDistance(distance);
+                            oldBean.setAlertArea("");
+                        } else {
+                            AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
+                                    aisBean.getPosition(), aisBean.getShipType(), "", distance));
                         }
                     }
                 }
-                turnAlert();
+//                turnAlert();
             }
         } catch (Exception ex) {
             System.out.println("aisMessageHandle : " + ex);
+            FileUtil.writeToFile(fileName, "aisMessageHandle : " + ex);
         }
     }
 
     private void turnAlert() {
         try {
+//            String alertArea = AISObjectList.getAlert();
+//            if (alertArea.equals(AISBean.RED_ALERT) && !AISObjectList.currentAlert.equals(AISBean.RED_ALERT)) {
+//                // call Uno_Red
+//                AISObjectList.currentAlert = alertArea;
+//                ArduinoUtil.redAlert();
+//            } else if (alertArea.equals(AISBean.YELLOW_ALERT) && !AISObjectList.currentAlert.equals(AISBean.YELLOW_ALERT)) {
+//                // call Uno_Yellow
+//                AISObjectList.currentAlert = alertArea;
+//                ArduinoUtil.yellowAlert();
+//            } else if (!alertArea.equals("") && !AISObjectList.currentAlert.equals("")) {
+//                // turn off alert
+//                AISObjectList.currentAlert = "";
+//                ArduinoUtil.turnOffAlert();
+//            }
             String alertArea = AISObjectList.getAlert();
-            System.out.println("alertArea: " + alertArea);
-            System.out.println("currentAlert: " + AISObjectList.currentAlert);
-            if (alertArea.equals(AISBean.RED_ALERT) && !AISObjectList.currentAlert.equals(AISBean.RED_ALERT)) {
+            if (alertArea.equals(AISBean.RED_ALERT)) {
                 // call Uno_Red
-                AISObjectList.currentAlert = alertArea;
                 ArduinoUtil.redAlert();
-            } else if (alertArea.equals(AISBean.YELLOW_ALERT) && !AISObjectList.currentAlert.equals(AISBean.YELLOW_ALERT)) {
+            } else if (alertArea.equals(AISBean.YELLOW_ALERT)) {
                 // call Uno_Yellow
-                AISObjectList.currentAlert = alertArea;
                 ArduinoUtil.yellowAlert();
-            } else if (!alertArea.equals("") && !AISObjectList.currentAlert.equals("")) {
+            } else if (!alertArea.equals("")) {
                 // turn off alert
-                AISObjectList.currentAlert = "";
                 ArduinoUtil.turnOffAlert();
             }
-            System.out.println("currentAlert 2: " + AISObjectList.currentAlert);
+
         } catch (Exception ex) {
             System.out.println("turnAlert : " + ex);
+            FileUtil.writeToFile(fileName, "turnAlert : " + ex);
         }
     }
 
@@ -218,6 +245,7 @@ public class AISThread extends Thread {
 //            FileUtil.writeToFile(writtenFileName, aisMessage.reassemble());
         } catch (Exception ex) {
             System.out.println("acceptAisMessage : " + ex);
+            FileUtil.writeToFile(fileName, "acceptAisMessage : " + ex);
         }
         return bean;
     }
@@ -228,33 +256,34 @@ public class AISThread extends Thread {
             if (aisMessage instanceof AisPositionMessage) {
                 // 1, 2, 3
                 AisPositionMessage mes = (AisPositionMessage) aisMessage;
-                result += ", navStatus: " + mes.getNavStatus();
-                result += ", posMes1: " + mes.getPos();
+//                result += ", navStatus: " + mes.getNavStatus();
+//                result += ", posMes1: " + mes.getPos();
                 aisBean.setNavStatus(mes.getNavStatus());
             } else if (aisMessage instanceof AisStaticCommon) {
                 // 5, 19, 24
                 AisStaticCommon mes = (AisStaticCommon) aisMessage;
-                result += ", name: " + mes.getName();
-                result += ", shipType: " + mes.getShipType();
+//                result += ", name: " + mes.getName();
+//                result += ", shipType: " + mes.getShipType();
                 aisBean.setShipType(mes.getShipType());
                 aisBean.setName(mes.getName());
             } else if (aisMessage instanceof AisMessage18) {
                 // 18
-                AisMessage18 mes = (AisMessage18) aisMessage;
-                result += ", posMes18: " + mes.getPos();
+//                AisMessage18 mes = (AisMessage18) aisMessage;
+//                result += ", posMes18: " + mes.getPos();
             } else if (aisMessage instanceof UTCDateResponseMessage) {
                 // 4, 11
-                UTCDateResponseMessage mes = (UTCDateResponseMessage) aisMessage;
-                result += ", posMes4: " + mes.getPos();
+//                UTCDateResponseMessage mes = (UTCDateResponseMessage) aisMessage;
+//                result += ", posMes4: " + mes.getPos();
             } else if (aisMessage instanceof IPositionMessage) {
                 // 9, 21, 27
-                IPositionMessage mes = (IPositionMessage) aisMessage;
-                result += ", posMes9: " + mes.getPos();
+//                IPositionMessage mes = (IPositionMessage) aisMessage;
+//                result += ", posMes9: " + mes.getPos();
             } else if (aisMessage instanceof AisMessage12) {
                 // 6, 7, 8, 10, 12, 13, 14, 17
             }
         } catch (Exception ex) {
             System.out.println("getStrToWrite : " + ex);
+            FileUtil.writeToFile(fileName, "getStrToWrite : " + ex);
         }
         return result;
     }
@@ -266,6 +295,7 @@ public class AISThread extends Thread {
             }
         } catch (Exception ex) {
             System.out.println("checkWithinArea1000 : " + ex);
+            FileUtil.writeToFile(fileName, "checkWithinArea1000 : " + ex);
         }
         return false;
     }
@@ -282,6 +312,7 @@ public class AISThread extends Thread {
             }
         } catch (Exception ex) {
             System.out.println("checkWithinArea500 : " + ex);
+            FileUtil.writeToFile(fileName, "checkWithinArea500 : " + ex);
         }
         return false;
     }
@@ -298,6 +329,7 @@ public class AISThread extends Thread {
             }
         } catch (Exception ex) {
             System.out.println("checkWithinArea200 : " + ex);
+            FileUtil.writeToFile(fileName, "checkWithinArea200 : " + ex);
         }
         return false;
     }

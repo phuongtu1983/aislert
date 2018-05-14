@@ -22,15 +22,15 @@ public class OnLoadServlet extends HttpServlet {
     public void init() {
         System.out.println("On Load Servlet start");
         try {
-            if (dataPort == null) {
-                dataPort = (new SerialUtil()).getSerialPort();
-            }
-            if (dataPort != null) {
-                String writtenFileName = this.getServletContext().getRealPath("/result.txt");
-                if (aisTimer == null) {
+//            if (dataPort == null) {
+//                dataPort = (new SerialUtil()).getSerialPort();
+//            }
+//            if (dataPort != null) {
+            String writtenFileName = this.getServletContext().getRealPath("/result.txt");
+            if (aisTimer == null) {
 
-//                    String fileName = this.getServletContext().getRealPath("/config.properties");
-                    String fromDate = "", toDate = "";
+                String fileName = this.getServletContext().getRealPath("/data.txt");
+                String fromDate = "", toDate = "";
 //                    try {
 //                        Properties props = ConfigUtil.readConfig(fileName);
 //                        if (!props.isEmpty()) {
@@ -40,12 +40,12 @@ public class OnLoadServlet extends HttpServlet {
 //                    } catch (Exception ex) {
 //
 //                    }
-                    new AISObjectList(fromDate, toDate);
-                    aisTimer = new AISTimerTask(dataPort, "", writtenFileName);
-                    aisTimer.run();
-                    aisTimer.schedule(0, 5000);
-                }
+                new AISObjectList(fromDate, toDate);
+                aisTimer = new AISTimerTask(dataPort, "", writtenFileName);
+                aisTimer.run();
+                aisTimer.schedule(0, 10000);
             }
+//            }
         } catch (Exception ex) {
         }
         System.out.println("On Load Servlet started");

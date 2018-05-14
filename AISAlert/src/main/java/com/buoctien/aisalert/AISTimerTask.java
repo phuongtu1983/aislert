@@ -43,10 +43,10 @@ public class AISTimerTask extends TimerTask {
     @Override
     public void run() {
         if (aisThread == null || aisThread.isStoped()) {
-            if (AISObjectList.isValidPeriod()) {
-                aisThread = new AISThread(fileName, writtenFileName, dataPort);
-                aisThread.start();
-            }
+//            if (AISObjectList.isValidPeriod()) {
+            aisThread = new AISThread(fileName, writtenFileName, dataPort);
+            aisThread.start();
+//            }
         }
     }
 }

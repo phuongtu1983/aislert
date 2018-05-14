@@ -8,7 +8,6 @@ package com.buoctien.aisalert;
 import com.buoctien.aisalert.bean.AISBean;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -20,7 +19,7 @@ public class AISObjectList {
     private final static ArrayList aisList = new ArrayList();
     private static Date fromDate = null;
     private static Date toDate = null;
-    public static String currentAlert = ""; // ''=off; 'RED'=bao dong do; 'YELLOW'=bao dong vang
+//    public static String currentAlert = ""; // ''=off; 'RED'=bao dong do; 'YELLOW'=bao dong vang
 
     public AISObjectList(String _fromDate, String _toDate) {
         try {

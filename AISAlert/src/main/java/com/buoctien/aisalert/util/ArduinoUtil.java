@@ -5,7 +5,6 @@
  */
 package com.buoctien.aisalert.util;
 
-import com.buoctien.aisalert.AISObjectList;
 
 /**
  *
@@ -14,16 +13,16 @@ import com.buoctien.aisalert.AISObjectList;
 public class ArduinoUtil {
 
     public static void redAlert() {
-        if (!AISObjectList.isValidPeriod()) {
-            return;
-        }
+//        if (!AISObjectList.isValidPeriod()) {
+//            return;
+//        }
         System.out.println("redAlert");
     }
 
     public static void yellowAlert() {
-        if (!AISObjectList.isValidPeriod()) {
-            return;
-        }
+//        if (!AISObjectList.isValidPeriod()) {
+//            return;
+//        }
         System.out.println("yellowAlert");
     }
 

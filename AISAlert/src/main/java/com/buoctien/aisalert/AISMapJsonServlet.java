@@ -69,7 +69,7 @@ public class AISMapJsonServlet extends HttpServlet {
 
             PrintWriter out = response.getWriter();
             out.print(jsonResult);
-            System.out.println("jsonResult: " + jsonResult);
+//            System.out.println("jsonResult: " + jsonResult);
         } catch (Exception ex) {
 
         }
