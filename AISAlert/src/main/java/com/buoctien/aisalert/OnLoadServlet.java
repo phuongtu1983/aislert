@@ -41,7 +41,7 @@ public class OnLoadServlet extends HttpServlet {
 //
 //                    }
                 new AISObjectList(fromDate, toDate);
-                aisTimer = new AISTimerTask(dataPort, "", writtenFileName);
+                aisTimer = new AISTimerTask(dataPort, fileName, writtenFileName);
                 aisTimer.run();
                 aisTimer.schedule(0, 10000);
             }

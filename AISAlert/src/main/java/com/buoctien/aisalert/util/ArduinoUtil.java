@@ -5,28 +5,27 @@
  */
 package com.buoctien.aisalert.util;
 
-
 /**
  *
  * @author DELL
  */
 public class ArduinoUtil {
 
-    public static void redAlert() {
+    public static void redAlert(int soundType) {
 //        if (!AISObjectList.isValidPeriod()) {
 //            return;
 //        }
         System.out.println("redAlert");
     }
 
-    public static void yellowAlert() {
+    public static void yellowAlert(int soundType) {
 //        if (!AISObjectList.isValidPeriod()) {
 //            return;
 //        }
         System.out.println("yellowAlert");
     }
 
-    public static void turnOffAlert() {
+    public static void turnOffAlert(int soundType) {
         System.out.println("turnOffAlert");
     }
 }

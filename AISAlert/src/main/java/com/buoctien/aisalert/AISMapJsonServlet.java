@@ -62,7 +62,7 @@ public class AISMapJsonServlet extends HttpServlet {
                 if (!jsonResult.isEmpty()) {
                     jsonResult += ",";
                 }
-                jsonResult += "{" + "\"name\":\"" + obj.getMMSI() + "\",\"latitude\":" + latitude
+                jsonResult += "{" + "\"name\":\"" + obj.getName()+ "\",\"latitude\":" + latitude
                         + ",\"longtitude\":" + longtitude + "}";
             }
             jsonResult = "{\"alert\":\"" + AISObjectList.getAlert() + "\",\"aisList\":[" + jsonResult + "]}";

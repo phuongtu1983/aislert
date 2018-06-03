@@ -6,6 +6,7 @@
 package com.buoctien.aisalert;
 
 import com.buoctien.aisalert.bean.AISBean;
+import com.buoctien.aisalert.bean.AlertBean;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -95,18 +96,27 @@ public class AISObjectList {
         return aisList;
     }
 
-    public static String getAlert() {
+    public static AlertBean getAlert() {
         AISBean obj = null;
-        String alert = "";
+        AlertBean resultBean = new AlertBean();
         for (int i = 0; i < aisList.size(); i++) {
             obj = (AISBean) aisList.get(i);
-            if (obj.getAlertArea().equals(AISBean.RED_ALERT)) {
-                return AISBean.RED_ALERT;
-            } else if (obj.getAlertArea().equals(AISBean.YELLOW_ALERT)) {
-                alert = obj.getAlertArea();
+            if (AISBean.RED_ALERT.equals(obj.getAlertArea()) || AISBean.YELLOW_ALERT.equals(obj.getAlertArea())) {
+                resultBean.setAlertArea(obj.getAlertArea());
+                if (obj.getShipType() >= 60 && obj.getShipType() <= 89 && obj.getShipType() != 70) {
+                    // 60 - 69 : Passenger
+                    // 71 - 74 : hang hoa nguy hiem
+                    // 80 - 89 : tanker
+                    resultBean.setSoundType(2); // am thanh don dap
+                } else if (obj.getShipType() == 70) {
+                    // 70 : cac loai hang hoa khac
+                    resultBean.setSoundType(1); // am thanh khong don dap
+                } else {
+                    resultBean.setSoundType(0); // tat am thanh
+                }
             }
         }
-        return alert;
+        return resultBean;
     }
 
     private static Date parseDate(String date) {

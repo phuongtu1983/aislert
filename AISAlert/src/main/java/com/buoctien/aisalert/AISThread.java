@@ -8,6 +8,7 @@ package com.buoctien.aisalert;
 import com.buoctien.aisalert.geoposition.Coordinates;
 import com.buoctien.aisalert.geoposition.CoordinatesCalculations;
 import com.buoctien.aisalert.bean.AISBean;
+import com.buoctien.aisalert.bean.AlertBean;
 import com.buoctien.aisalert.bean.StaticBean;
 import com.buoctien.aisalert.util.AISUtil;
 import com.buoctien.aisalert.util.ArduinoUtil;
@@ -53,10 +54,10 @@ public class AISThread extends Thread {
     @Override
     public void run() {
         try {
-//            runFromFile2();
+            runFromFile2();
 //            runFromSerialPort();
-            createEmulatorData();
-            handleEmulateData();
+//            createEmulatorData();
+//            handleEmulateData();
 //            this.stoped = true;
         } catch (Exception ex) {
             System.out.println("run : " + ex);
@@ -141,13 +142,11 @@ public class AISThread extends Thread {
                         oldBean.setDistance(distance);
                         if (oldBean.setAlertArea(AISBean.RED_ALERT)) {
                             turnAlert();
-                            System.out.println("aisBean : " + aisBean.getMMSI() + ":" + aisBean.getName());
                         }
                     } else {
                         AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
                                 aisBean.getPosition(), aisBean.getShipType(), AISBean.RED_ALERT, distance));
                         turnAlert();
-                        System.out.println("aisBean new: " + aisBean.getMMSI() + ":" + aisBean.getName());
                     }
                 } else {// khong nam trong khu vuc 200m
                     result = checkWithinArea500(aisBean.getPosition());
@@ -162,19 +161,16 @@ public class AISThread extends Thread {
                             if (oldBean.getNavigation() > 0) {
                                 if (oldBean.setAlertArea("")) {
                                     turnAlert();
-                                    System.out.println("aisBean : " + aisBean.getMMSI() + ":" + aisBean.getName());
                                 }
                             } else {
                                 if (oldBean.setAlertArea(AISBean.YELLOW_ALERT)) {
                                     turnAlert();
-                                    System.out.println("aisBean : " + aisBean.getMMSI() + ":" + aisBean.getName());
                                 }
                             }
                         } else {
                             AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
                                     aisBean.getPosition(), aisBean.getShipType(), AISBean.YELLOW_ALERT, distance));
                             turnAlert();
-                            System.out.println("aisBean new : " + aisBean.getMMSI() + ":" + aisBean.getName());
                         }
                     } else { // nam ngoai khu vuc 500m
                         // nen nam trong khu vuc hien thi (500 - 1000)
@@ -192,6 +188,14 @@ public class AISThread extends Thread {
                     }
                 }
 //                turnAlert();
+            } else {
+                if (aisBean.getShipType() != -1) {
+                    AISBean oldBean = AISObjectList.get(key);
+                    if (oldBean != null) {
+                        oldBean.setShipType(aisBean.getShipType());
+                        oldBean.setName(aisBean.getName());
+                    }
+                }
             }
         } catch (Exception ex) {
             System.out.println("aisMessageHandle : " + ex);
@@ -215,16 +219,16 @@ public class AISThread extends Thread {
 //                AISObjectList.currentAlert = "";
 //                ArduinoUtil.turnOffAlert();
 //            }
-            String alertArea = AISObjectList.getAlert();
-            if (alertArea.equals(AISBean.RED_ALERT)) {
+            AlertBean aisObject = AISObjectList.getAlert();
+            if (aisObject.getAlertArea().equals(AISBean.RED_ALERT)) {
                 // call Uno_Red
-                ArduinoUtil.redAlert();
-            } else if (alertArea.equals(AISBean.YELLOW_ALERT)) {
+                ArduinoUtil.redAlert(aisObject.getSoundType());
+            } else if (aisObject.getAlertArea().equals(AISBean.YELLOW_ALERT)) {
                 // call Uno_Yellow
-                ArduinoUtil.yellowAlert();
-            } else if (!alertArea.equals("")) {
+                ArduinoUtil.yellowAlert(aisObject.getSoundType());
+            } else if (!aisObject.getAlertArea().equals("")) {
                 // turn off alert
-                ArduinoUtil.turnOffAlert();
+                ArduinoUtil.turnOffAlert(aisObject.getSoundType());
             }
 
         } catch (Exception ex) {
@@ -281,6 +285,8 @@ public class AISThread extends Thread {
             } else if (aisMessage instanceof AisMessage12) {
                 // 6, 7, 8, 10, 12, 13, 14, 17
             }
+
+            System.out.println("aisMessage : " + aisMessage.toString());
         } catch (Exception ex) {
             System.out.println("getStrToWrite : " + ex);
             FileUtil.writeToFile(fileName, "getStrToWrite : " + ex);
