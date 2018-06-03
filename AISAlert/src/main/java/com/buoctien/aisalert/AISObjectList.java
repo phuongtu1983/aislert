@@ -7,9 +7,7 @@ package com.buoctien.aisalert;
 
 import com.buoctien.aisalert.bean.AISBean;
 import com.buoctien.aisalert.bean.AlertBean;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  *
@@ -18,34 +16,34 @@ import java.util.Date;
 public class AISObjectList {
 
     private final static ArrayList aisList = new ArrayList();
-    private static Date fromDate = null;
-    private static Date toDate = null;
+//    private static Date fromDate = null;
+//    private static Date toDate = null;
 //    public static String currentAlert = ""; // ''=off; 'RED'=bao dong do; 'YELLOW'=bao dong vang
 
-    public AISObjectList(String _fromDate, String _toDate) {
-        try {
-            fromDate = parseDate(_fromDate);
-            toDate = parseDate(_toDate);
-        } catch (Exception ex) {
+//    public AISObjectList(String _fromDate, String _toDate) {
+//        try {
+//            fromDate = parseDate(_fromDate);
+//            toDate = parseDate(_toDate);
+//        } catch (Exception ex) {
+//
+//        }
+//    }
 
-        }
-    }
+//    public static void setFromDate(String _fromDate) {
+//        try {
+//            fromDate = parseDate(_fromDate);
+//        } catch (Exception ex) {
+//
+//        }
+//    }
 
-    public static void setFromDate(String _fromDate) {
-        try {
-            fromDate = parseDate(_fromDate);
-        } catch (Exception ex) {
-
-        }
-    }
-
-    public static void setToDate(String _toDate) {
-        try {
-            toDate = parseDate(_toDate);
-        } catch (Exception ex) {
-
-        }
-    }
+//    public static void setToDate(String _toDate) {
+//        try {
+//            toDate = parseDate(_toDate);
+//        } catch (Exception ex) {
+//
+//        }
+//    }
 
     public static void addObject(AISBean bean) {
         AISBean obj = null;
@@ -119,15 +117,15 @@ public class AISObjectList {
         return resultBean;
     }
 
-    private static Date parseDate(String date) {
-        try {
-            SimpleDateFormat parser = new SimpleDateFormat("HH:mm");
-            return parser.parse(date);
-        } catch (java.text.ParseException e) {
-        }
-        return null;
-    }
-
+//    private static Date parseDate(String date) {
+//        try {
+//            SimpleDateFormat parser = new SimpleDateFormat("HH:mm");
+//            return parser.parse(date);
+//        } catch (java.text.ParseException e) {
+//        }
+//        return null;
+//    }
+/*
     public static boolean isValidPeriod() {
         return true;
 //        try {
@@ -146,4 +144,5 @@ public class AISObjectList {
 //        }
 //        return false;
     }
+*/
 }

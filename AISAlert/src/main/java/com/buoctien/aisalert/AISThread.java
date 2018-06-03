@@ -8,10 +8,8 @@ package com.buoctien.aisalert;
 import com.buoctien.aisalert.geoposition.Coordinates;
 import com.buoctien.aisalert.geoposition.CoordinatesCalculations;
 import com.buoctien.aisalert.bean.AISBean;
-import com.buoctien.aisalert.bean.AlertBean;
 import com.buoctien.aisalert.bean.StaticBean;
 import com.buoctien.aisalert.util.AISUtil;
-import com.buoctien.aisalert.util.ArduinoUtil;
 import com.buoctien.aisalert.util.FileUtil;
 import dk.dma.ais.filter.DownSampleFilter;
 import dk.dma.ais.filter.DuplicateFilter;
@@ -54,11 +52,11 @@ public class AISThread extends Thread {
     @Override
     public void run() {
         try {
-            runFromFile2();
+//            runFromFile2();
 //            runFromSerialPort();
-//            createEmulatorData();
-//            handleEmulateData();
-//            this.stoped = true;
+            createEmulatorData();
+            handleEmulateData();
+            this.stoped = true;
         } catch (Exception ex) {
             System.out.println("run : " + ex);
             FileUtil.writeToFile(fileName, "run : " + ex);
@@ -140,13 +138,14 @@ public class AISThread extends Thread {
                         oldBean.setPosition(aisBean.getPosition());
                         oldBean.setNavigation(distance < oldBean.getDistance() ? -1 : 1);
                         oldBean.setDistance(distance);
-                        if (oldBean.setAlertArea(AISBean.RED_ALERT)) {
-                            turnAlert();
-                        }
+                        oldBean.setAlertArea(AISBean.RED_ALERT);
+//                        if (oldBean.setAlertArea(AISBean.RED_ALERT)) {
+//                            turnAlert();
+//                        }
                     } else {
                         AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
                                 aisBean.getPosition(), aisBean.getShipType(), AISBean.RED_ALERT, distance));
-                        turnAlert();
+//                        turnAlert();
                     }
                 } else {// khong nam trong khu vuc 200m
                     result = checkWithinArea500(aisBean.getPosition());
@@ -159,18 +158,20 @@ public class AISThread extends Thread {
                             oldBean.setNavigation(distance < oldBean.getDistance() ? -1 : 1);
                             oldBean.setDistance(distance);
                             if (oldBean.getNavigation() > 0) {
-                                if (oldBean.setAlertArea("")) {
-                                    turnAlert();
-                                }
+                                oldBean.setAlertArea("");
+//                                if (oldBean.setAlertArea("")) {
+//                                    turnAlert();
+//                                }
                             } else {
-                                if (oldBean.setAlertArea(AISBean.YELLOW_ALERT)) {
-                                    turnAlert();
-                                }
+                                oldBean.setAlertArea(AISBean.YELLOW_ALERT);
+//                                if (oldBean.setAlertArea(AISBean.YELLOW_ALERT)) {
+//                                    turnAlert();
+//                                }
                             }
                         } else {
                             AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
                                     aisBean.getPosition(), aisBean.getShipType(), AISBean.YELLOW_ALERT, distance));
-                            turnAlert();
+//                            turnAlert();
                         }
                     } else { // nam ngoai khu vuc 500m
                         // nen nam trong khu vuc hien thi (500 - 1000)
@@ -203,6 +204,7 @@ public class AISThread extends Thread {
         }
     }
 
+    /*
     private void turnAlert() {
         try {
 //            String alertArea = AISObjectList.getAlert();
@@ -236,7 +238,7 @@ public class AISThread extends Thread {
             FileUtil.writeToFile(fileName, "turnAlert : " + ex);
         }
     }
-
+     */
     private AISBean acceptAisMessage(AisMessage aisMessage) {
         AISBean bean = new AISBean();
         bean.setMMSI(aisMessage.getUserId() + "");

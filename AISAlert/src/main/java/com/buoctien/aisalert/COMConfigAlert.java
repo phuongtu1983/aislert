@@ -5,8 +5,11 @@
  */
 package com.buoctien.aisalert;
 
+import com.buoctien.aisalert.bean.StaticBean;
 import com.buoctien.aisalert.util.ConfigUtil;
+import com.buoctien.aisalert.util.SerialUtil;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Properties;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -16,10 +19,11 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author Administrator
+ * @author DELL
  */
-public class ConfigServlet extends HttpServlet {
+public class COMConfigAlert extends HttpServlet {
 
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -47,22 +51,27 @@ public class ConfigServlet extends HttpServlet {
             throws ServletException, IOException {
         try {
             String fileName = this.getServletContext().getRealPath("/config.properties");
-            String start_time = request.getParameter("start_time");
-            if (start_time != null && !start_time.isEmpty()) {
+            String aisPort = request.getParameter("aisPort");
+            if (aisPort != null && !aisPort.isEmpty()) {
                 try {
                     Properties props = new Properties();
-                    props.setProperty("start_time", request.getParameter("start_time"));
-                    props.setProperty("end_time", request.getParameter("end_time"));
+                    props.setProperty("ais_port", request.getParameter("aisPort"));
+                    props.setProperty("ais_baudrate", request.getParameter("aisBaudrate"));
+                    props.setProperty("wireless_port", request.getParameter("wirelessPort"));
+                    props.setProperty("wireless_baudrate", request.getParameter("wirelessBaudrate"));
                     ConfigUtil.saveConfig(fileName, props);
-                    AISObjectList.setFromDate((String) props.get("start_time"));
-                    AISObjectList.setToDate((String) props.get("end_time"));
                 } catch (Exception ex) {
-
                 }
+            } else {
+
             }
             Properties props = ConfigUtil.readConfig(fileName);
-            request.setAttribute("properties", props);
-            RequestDispatcher dispatcher = request.getRequestDispatcher("config.jsp");
+            request.setAttribute(StaticBean.PROPERTIES, props);
+
+            ArrayList ports = SerialUtil.getSerialPorts();
+            request.setAttribute(StaticBean.COM_PORTS, ports);
+
+            RequestDispatcher dispatcher = request.getRequestDispatcher("com_config.jsp");
             dispatcher.forward(request, response);
         } catch (Exception ex) {
             // I/O error

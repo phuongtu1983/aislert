@@ -15,22 +15,24 @@ import javax.servlet.http.HttpServlet;
  */
 public class OnLoadServlet extends HttpServlet {
 
-    private SerialPort dataPort = null;
+    private SerialPort aisDataPort = null;
+
     AISTimerTask aisTimer = null;
+    AlertTimerTask alertTimer = null;
 
     @Override
     public void init() {
         System.out.println("On Load Servlet start");
         try {
-//            if (dataPort == null) {
-//                dataPort = (new SerialUtil()).getSerialPort();
+//            if (aisDataPort == null) {
+//                aisDataPort = (new SerialUtil()).getSerialPort();
 //            }
-//            if (dataPort != null) {
+//            if (aisDataPort != null) {
             String writtenFileName = this.getServletContext().getRealPath("/result.txt");
             if (aisTimer == null) {
 
-                String fileName = this.getServletContext().getRealPath("/data.txt");
-                String fromDate = "", toDate = "";
+                String dataFileName = this.getServletContext().getRealPath("/data.txt");
+//                String fromDate = "", toDate = "";
 //                    try {
 //                        Properties props = ConfigUtil.readConfig(fileName);
 //                        if (!props.isEmpty()) {
@@ -40,10 +42,17 @@ public class OnLoadServlet extends HttpServlet {
 //                    } catch (Exception ex) {
 //
 //                    }
-                new AISObjectList(fromDate, toDate);
-                aisTimer = new AISTimerTask(dataPort, fileName, writtenFileName);
+//                new AISObjectList(fromDate, toDate);
+                new AISObjectList();
+                aisTimer = new AISTimerTask(aisDataPort, dataFileName, writtenFileName);
                 aisTimer.run();
                 aisTimer.schedule(0, 10000);
+            }
+            if (alertTimer == null) {
+                String configFileName = this.getServletContext().getRealPath("/config.properties");
+                alertTimer = new AlertTimerTask(configFileName);
+                alertTimer.run();
+                alertTimer.schedule(0, 2000);
             }
 //            }
         } catch (Exception ex) {
@@ -54,13 +63,17 @@ public class OnLoadServlet extends HttpServlet {
     @Override
     public void destroy() {
         try {
-            if (dataPort != null) {
-                dataPort.close();
-                dataPort = null;
+            if (aisDataPort != null) {
+                aisDataPort.close();
+                aisDataPort = null;
             }
             if (aisTimer != null) {
                 aisTimer.cancel();
                 aisTimer = null;
+            }
+            if (alertTimer != null) {
+                alertTimer.cancel();
+                alertTimer = null;
             }
             System.out.println("On Load Servlet stopped");
         } catch (Exception ex) {

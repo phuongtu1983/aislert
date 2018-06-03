@@ -34,5 +34,8 @@ public class StaticBean {
                     new Coordinates(10.663977952040657, 106.7965698537846),
                     new Coordinates(10.664393792645135, 106.79700437380211),
                     new Coordinates(10.664600020294783, 106.79722331065)));
+    
+    public static final String PROPERTIES = "properties";
+    public static final String COM_PORTS = "comports";
 
 }
