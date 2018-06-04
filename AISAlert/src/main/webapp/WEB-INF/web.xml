@@ -21,13 +21,21 @@
         <servlet-name>TestAlert</servlet-name>
         <servlet-class>com.buoctien.aisalert.TestAlert</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>Main</servlet-name>
+        <servlet-class>com.buoctien.aisalert.Main</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>MainPage</servlet-name>
+        <servlet-class>com.buoctien.aisalert.MainPage</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>OnLoadServlet</servlet-name>
         <url-pattern>/OnLoadServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>MapServlet</servlet-name>
-        <url-pattern>/MapServlet.do</url-pattern>
+        <url-pattern>/mapservlet.do</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AISMapJsonServlet</servlet-name>
@@ -40,6 +48,10 @@
     <servlet-mapping>
         <servlet-name>TestAlert</servlet-name>
         <url-pattern>/testalert.do</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>MainPage</servlet-name>
+        <url-pattern>/mainpage.do</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

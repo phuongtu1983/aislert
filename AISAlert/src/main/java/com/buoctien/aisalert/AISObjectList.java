@@ -16,34 +16,6 @@ import java.util.ArrayList;
 public class AISObjectList {
 
     private final static ArrayList aisList = new ArrayList();
-//    private static Date fromDate = null;
-//    private static Date toDate = null;
-//    public static String currentAlert = ""; // ''=off; 'RED'=bao dong do; 'YELLOW'=bao dong vang
-
-//    public AISObjectList(String _fromDate, String _toDate) {
-//        try {
-//            fromDate = parseDate(_fromDate);
-//            toDate = parseDate(_toDate);
-//        } catch (Exception ex) {
-//
-//        }
-//    }
-
-//    public static void setFromDate(String _fromDate) {
-//        try {
-//            fromDate = parseDate(_fromDate);
-//        } catch (Exception ex) {
-//
-//        }
-//    }
-
-//    public static void setToDate(String _toDate) {
-//        try {
-//            toDate = parseDate(_toDate);
-//        } catch (Exception ex) {
-//
-//        }
-//    }
 
     public static void addObject(AISBean bean) {
         AISBean obj = null;
@@ -116,33 +88,4 @@ public class AISObjectList {
         }
         return resultBean;
     }
-
-//    private static Date parseDate(String date) {
-//        try {
-//            SimpleDateFormat parser = new SimpleDateFormat("HH:mm");
-//            return parser.parse(date);
-//        } catch (java.text.ParseException e) {
-//        }
-//        return null;
-//    }
-/*
-    public static boolean isValidPeriod() {
-        return true;
-//        try {
-//            Calendar now = Calendar.getInstance();
-//            int hour = now.get(Calendar.HOUR_OF_DAY);
-//            int minute = now.get(Calendar.MINUTE);
-//            String strDate = hour + ":" + minute;
-//            Date date = parseDate(strDate);
-//            if (date != null && fromDate != null && toDate != null) {
-//                if (fromDate.before(date) && toDate.after(date)) {
-//                    return true;
-//                }
-//            }
-//        } catch (Exception ex) {
-//
-//        }
-//        return false;
-    }
-*/
 }

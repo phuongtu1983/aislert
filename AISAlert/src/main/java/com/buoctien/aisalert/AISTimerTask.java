@@ -5,6 +5,7 @@
  */
 package com.buoctien.aisalert;
 
+import com.buoctien.aisalert.util.SerialUtil;
 import com.buoctien.aisalert.util.TimerUtil;
 import gnu.io.SerialPort;
 import java.util.TimerTask;
@@ -16,14 +17,14 @@ import java.util.TimerTask;
 public class AISTimerTask extends TimerTask {
 
     private AISThread aisThread = null;
-    private final SerialPort dataPort;
-    private final String fileName;
+    private SerialPort dataPort;
     private final String writtenFileName;
+    private final String configFileName;
     private boolean scheduled;
 
-    public AISTimerTask(SerialPort dataPort, String fileName, String writtenFileName) {
+    public AISTimerTask(SerialPort dataPort, String configFileName, String writtenFileName) {
         this.dataPort = dataPort;
-        this.fileName = fileName;
+        this.configFileName = configFileName;
         this.writtenFileName = writtenFileName;
         scheduled = false;
     }
@@ -37,16 +38,31 @@ public class AISTimerTask extends TimerTask {
 
     @Override
     public boolean cancel() {
+        if (aisThread != null && aisThread.isAlive()) {
+            aisThread.interrupt();
+            aisThread = null;
+        }
         return super.cancel();
     }
 
     @Override
     public void run() {
-        if (aisThread == null || aisThread.isStoped()) {
-//            if (AISObjectList.isValidPeriod()) {
-            aisThread = new AISThread(fileName, writtenFileName, dataPort);
-            aisThread.start();
+        try {
+//            if (dataPort == null) {
+//                dataPort = SerialUtil.initAlertPort(configFileName, "ais_port", "ais_baudrate");
+//                if (dataPort == null) {
+//                    return;
+//                }
 //            }
+            if (aisThread == null || aisThread.isInterrupted()) {
+                aisThread = new AISThread(writtenFileName, dataPort);
+                aisThread.start();
+            } else if (aisThread.isStoped()) {
+                aisThread.interrupt();
+                aisThread = null;
+            }
+        } catch (Exception ex) {
+
         }
     }
 }

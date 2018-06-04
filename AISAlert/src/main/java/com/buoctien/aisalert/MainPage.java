@@ -5,10 +5,10 @@
  */
 package com.buoctien.aisalert;
 
-import com.buoctien.aisalert.bean.AISBean;
+import com.buoctien.aisalert.util.ConfigUtil;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.util.Properties;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author DELL
  */
-public class AISMapJsonServlet extends HttpServlet {
+public class MainPage extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -46,34 +46,22 @@ public class AISMapJsonServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("application/json;charset=UTF-8");
-        response.setHeader("Cache-Control", "no-cache");
         try {
-            ArrayList list = AISObjectList.getList();
-            AISBean obj = null;
-            String jsonResult = "";
-            for (int i = 0; i < list.size(); i++) {
-                obj = (AISBean) list.get(i);
-                String latitude = "", longtitude = "";
-                if (obj.getPosition() != null) {
-                    latitude = obj.getPosition().getLatitude() + "";
-                    longtitude = obj.getPosition().getLongitude() + "";
+            String action = "comconfigalert.do";
+            String configFileName = this.getServletContext().getRealPath("/config.properties");
+            Properties props = ConfigUtil.readConfig(configFileName);
+            if (props != null) {
+                String aisPort = props.getProperty("ais_port");
+                String wirelessPort = props.getProperty("wireless_port");
+                if (aisPort != null && !aisPort.isEmpty() && wirelessPort != null && !wirelessPort.isEmpty()) {
+                    action = "mapservlet.do";
                 }
-                if (!jsonResult.isEmpty()) {
-                    jsonResult += ",";
-                }
-                jsonResult += "{" + "\"name\":\"" + obj.getName() + "\",\"latitude\":" + latitude
-                        + ",\"longtitude\":" + longtitude + ",\"shipType\":" + obj.getShipType() + "}";
             }
-            jsonResult = "{\"alert\":\"" + AISObjectList.getAlert().getAlertArea() + "\",\"aisList\":[" + jsonResult + "]}";
-
-            PrintWriter out = response.getWriter();
-            out.print(jsonResult);
-//            System.out.println("jsonResult: " + jsonResult);
+            RequestDispatcher dispatcher = request.getRequestDispatcher(action);
+            dispatcher.forward(request, response);
         } catch (Exception ex) {
 
         }
-
     }
 
 }

@@ -24,37 +24,22 @@ public class OnLoadServlet extends HttpServlet {
     public void init() {
         System.out.println("On Load Servlet start");
         try {
-//            if (aisDataPort == null) {
-//                aisDataPort = (new SerialUtil()).getSerialPort();
-//            }
-//            if (aisDataPort != null) {
+            String configFileName = this.getServletContext().getRealPath("/config.properties");
+            if (aisDataPort == null) {
+                aisDataPort = SerialUtil.initAlertPort(configFileName, "ais_port", "ais_baudrate");
+            }
             String writtenFileName = this.getServletContext().getRealPath("/result.txt");
             if (aisTimer == null) {
-
-                String dataFileName = this.getServletContext().getRealPath("/data.txt");
-//                String fromDate = "", toDate = "";
-//                    try {
-//                        Properties props = ConfigUtil.readConfig(fileName);
-//                        if (!props.isEmpty()) {
-//                            fromDate = (String) props.get("start_time");
-//                            toDate = (String) props.get("end_time");
-//                        }
-//                    } catch (Exception ex) {
-//
-//                    }
-//                new AISObjectList(fromDate, toDate);
                 new AISObjectList();
-                aisTimer = new AISTimerTask(aisDataPort, dataFileName, writtenFileName);
+                aisTimer = new AISTimerTask(aisDataPort, configFileName, writtenFileName);
                 aisTimer.run();
                 aisTimer.schedule(0, 10000);
             }
             if (alertTimer == null) {
-                String configFileName = this.getServletContext().getRealPath("/config.properties");
                 alertTimer = new AlertTimerTask(configFileName);
                 alertTimer.run();
                 alertTimer.schedule(0, 2000);
             }
-//            }
         } catch (Exception ex) {
         }
         System.out.println("On Load Servlet started");

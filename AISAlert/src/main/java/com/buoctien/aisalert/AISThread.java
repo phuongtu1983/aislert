@@ -36,14 +36,12 @@ import java.util.function.Consumer;
 public class AISThread extends Thread {
 
     private final SerialPort dataPort;
-    private final String fileName;
     private final String writtenFileName;
     private boolean stoped;
 
     private ArrayList emulatorAISData = new ArrayList();
 
-    public AISThread(String fileName, String writtenFileName, SerialPort dataPort) {
-        this.fileName = fileName;
+    public AISThread(String writtenFileName, SerialPort dataPort) {
         this.writtenFileName = writtenFileName;
         this.dataPort = dataPort;
         this.stoped = false;
@@ -52,40 +50,20 @@ public class AISThread extends Thread {
     @Override
     public void run() {
         try {
-//            runFromFile2();
 //            runFromSerialPort();
             createEmulatorData();
             handleEmulateData();
-            this.stoped = true;
         } catch (Exception ex) {
+            this.stoped = true;
             System.out.println("run : " + ex);
-            FileUtil.writeToFile(fileName, "run : " + ex);
+            FileUtil.writeToFile(writtenFileName, "run : " + ex);
         }
     }
 
     public boolean isStoped() {
         return stoped;
     }
-
-    private void runFromFile2() {
-        try {
-            AisReader reader = AISUtil.readFromFile(fileName);
-            if (reader != null) {
-                reader.registerHandler(new Consumer<AisMessage>() {
-                    @Override
-                    public void accept(AisMessage aisMessage) {
-                        aisMessageHandle(aisMessage);
-                    }
-                });
-                reader.start();
-                reader.join();
-            }
-
-        } catch (Exception ex) {
-
-        }
-    }
-
+    
     private void runFromSerialPort() {
         try {
             AisReader reader = AISUtil.readFromSerialPort(dataPort);
@@ -111,8 +89,9 @@ public class AISThread extends Thread {
                 reader.join();
             }
         } catch (Exception ex) {
+            this.stoped = true;
             System.out.println("runFromSerialPort : " + ex);
-            FileUtil.writeToFile(fileName, "runFromSerialPort : " + ex);
+            FileUtil.writeToFile(writtenFileName, "runFromSerialPort : " + ex);
         }
     }
 
@@ -131,7 +110,6 @@ public class AISThread extends Thread {
                 }
                 result = checkWithinArea200(aisBean.getPosition());
                 if (result) { // nam trong khu vuc 200m
-//                    System.out.println("Within 200");
                     AISBean oldBean = AISObjectList.get(key);
                     double distance = getDistance(aisBean.getPosition());
                     if (oldBean != null) {
@@ -139,18 +117,13 @@ public class AISThread extends Thread {
                         oldBean.setNavigation(distance < oldBean.getDistance() ? -1 : 1);
                         oldBean.setDistance(distance);
                         oldBean.setAlertArea(AISBean.RED_ALERT);
-//                        if (oldBean.setAlertArea(AISBean.RED_ALERT)) {
-//                            turnAlert();
-//                        }
                     } else {
                         AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
                                 aisBean.getPosition(), aisBean.getShipType(), AISBean.RED_ALERT, distance));
-//                        turnAlert();
                     }
                 } else {// khong nam trong khu vuc 200m
                     result = checkWithinArea500(aisBean.getPosition());
                     if (result) { // nam trong khu vuc tu 200m den 500m
-//                        System.out.println("Within 200 - 500");
                         AISBean oldBean = AISObjectList.get(key);
                         double distance = getDistance(aisBean.getPosition());
                         if (oldBean != null) {
@@ -159,19 +132,12 @@ public class AISThread extends Thread {
                             oldBean.setDistance(distance);
                             if (oldBean.getNavigation() > 0) {
                                 oldBean.setAlertArea("");
-//                                if (oldBean.setAlertArea("")) {
-//                                    turnAlert();
-//                                }
                             } else {
                                 oldBean.setAlertArea(AISBean.YELLOW_ALERT);
-//                                if (oldBean.setAlertArea(AISBean.YELLOW_ALERT)) {
-//                                    turnAlert();
-//                                }
                             }
                         } else {
                             AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
                                     aisBean.getPosition(), aisBean.getShipType(), AISBean.YELLOW_ALERT, distance));
-//                            turnAlert();
                         }
                     } else { // nam ngoai khu vuc 500m
                         // nen nam trong khu vuc hien thi (500 - 1000)
@@ -188,7 +154,6 @@ public class AISThread extends Thread {
                         }
                     }
                 }
-//                turnAlert();
             } else {
                 if (aisBean.getShipType() != -1) {
                     AISBean oldBean = AISObjectList.get(key);
@@ -200,45 +165,10 @@ public class AISThread extends Thread {
             }
         } catch (Exception ex) {
             System.out.println("aisMessageHandle : " + ex);
-            FileUtil.writeToFile(fileName, "aisMessageHandle : " + ex);
+            FileUtil.writeToFile(writtenFileName, "aisMessageHandle : " + ex);
         }
     }
 
-    /*
-    private void turnAlert() {
-        try {
-//            String alertArea = AISObjectList.getAlert();
-//            if (alertArea.equals(AISBean.RED_ALERT) && !AISObjectList.currentAlert.equals(AISBean.RED_ALERT)) {
-//                // call Uno_Red
-//                AISObjectList.currentAlert = alertArea;
-//                ArduinoUtil.redAlert();
-//            } else if (alertArea.equals(AISBean.YELLOW_ALERT) && !AISObjectList.currentAlert.equals(AISBean.YELLOW_ALERT)) {
-//                // call Uno_Yellow
-//                AISObjectList.currentAlert = alertArea;
-//                ArduinoUtil.yellowAlert();
-//            } else if (!alertArea.equals("") && !AISObjectList.currentAlert.equals("")) {
-//                // turn off alert
-//                AISObjectList.currentAlert = "";
-//                ArduinoUtil.turnOffAlert();
-//            }
-            AlertBean aisObject = AISObjectList.getAlert();
-            if (aisObject.getAlertArea().equals(AISBean.RED_ALERT)) {
-                // call Uno_Red
-                ArduinoUtil.redAlert(aisObject.getSoundType());
-            } else if (aisObject.getAlertArea().equals(AISBean.YELLOW_ALERT)) {
-                // call Uno_Yellow
-                ArduinoUtil.yellowAlert(aisObject.getSoundType());
-            } else if (!aisObject.getAlertArea().equals("")) {
-                // turn off alert
-                ArduinoUtil.turnOffAlert(aisObject.getSoundType());
-            }
-
-        } catch (Exception ex) {
-            System.out.println("turnAlert : " + ex);
-            FileUtil.writeToFile(fileName, "turnAlert : " + ex);
-        }
-    }
-     */
     private AISBean acceptAisMessage(AisMessage aisMessage) {
         AISBean bean = new AISBean();
         bean.setMMSI(aisMessage.getUserId() + "");
@@ -251,7 +181,7 @@ public class AISThread extends Thread {
 //            FileUtil.writeToFile(writtenFileName, aisMessage.reassemble());
         } catch (Exception ex) {
             System.out.println("acceptAisMessage : " + ex);
-            FileUtil.writeToFile(fileName, "acceptAisMessage : " + ex);
+            FileUtil.writeToFile(writtenFileName, "acceptAisMessage : " + ex);
         }
         return bean;
     }
@@ -262,36 +192,27 @@ public class AISThread extends Thread {
             if (aisMessage instanceof AisPositionMessage) {
                 // 1, 2, 3
                 AisPositionMessage mes = (AisPositionMessage) aisMessage;
-//                result += ", navStatus: " + mes.getNavStatus();
-//                result += ", posMes1: " + mes.getPos();
                 aisBean.setNavStatus(mes.getNavStatus());
             } else if (aisMessage instanceof AisStaticCommon) {
                 // 5, 19, 24
                 AisStaticCommon mes = (AisStaticCommon) aisMessage;
-//                result += ", name: " + mes.getName();
-//                result += ", shipType: " + mes.getShipType();
                 aisBean.setShipType(mes.getShipType());
                 aisBean.setName(mes.getName());
             } else if (aisMessage instanceof AisMessage18) {
                 // 18
 //                AisMessage18 mes = (AisMessage18) aisMessage;
-//                result += ", posMes18: " + mes.getPos();
             } else if (aisMessage instanceof UTCDateResponseMessage) {
                 // 4, 11
 //                UTCDateResponseMessage mes = (UTCDateResponseMessage) aisMessage;
-//                result += ", posMes4: " + mes.getPos();
             } else if (aisMessage instanceof IPositionMessage) {
                 // 9, 21, 27
 //                IPositionMessage mes = (IPositionMessage) aisMessage;
-//                result += ", posMes9: " + mes.getPos();
             } else if (aisMessage instanceof AisMessage12) {
                 // 6, 7, 8, 10, 12, 13, 14, 17
             }
-
-            System.out.println("aisMessage : " + aisMessage.toString());
         } catch (Exception ex) {
             System.out.println("getStrToWrite : " + ex);
-            FileUtil.writeToFile(fileName, "getStrToWrite : " + ex);
+            FileUtil.writeToFile(writtenFileName, "getStrToWrite : " + ex);
         }
         return result;
     }
@@ -303,7 +224,7 @@ public class AISThread extends Thread {
             }
         } catch (Exception ex) {
             System.out.println("checkWithinArea1000 : " + ex);
-            FileUtil.writeToFile(fileName, "checkWithinArea1000 : " + ex);
+            FileUtil.writeToFile(writtenFileName, "checkWithinArea1000 : " + ex);
         }
         return false;
     }
@@ -320,7 +241,7 @@ public class AISThread extends Thread {
             }
         } catch (Exception ex) {
             System.out.println("checkWithinArea500 : " + ex);
-            FileUtil.writeToFile(fileName, "checkWithinArea500 : " + ex);
+            FileUtil.writeToFile(writtenFileName, "checkWithinArea500 : " + ex);
         }
         return false;
     }
@@ -337,7 +258,7 @@ public class AISThread extends Thread {
             }
         } catch (Exception ex) {
             System.out.println("checkWithinArea200 : " + ex);
-            FileUtil.writeToFile(fileName, "checkWithinArea200 : " + ex);
+            FileUtil.writeToFile(writtenFileName, "checkWithinArea200 : " + ex);
         }
         return false;
     }

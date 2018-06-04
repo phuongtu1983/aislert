@@ -74,7 +74,7 @@ function getAISAjax() {
             $("#alertSpan").css("background-color", json.alert);
             $.each(data, function (index, boat) {
                 var location = new google.maps.LatLng(parseFloat(boat.latitude), parseFloat(boat.longtitude));
-                addMarker(location, boat.name);
+                addMarker(location, boat.name + ":" + boat.shipType);
             });
         },
         error: function (data, status, er) {

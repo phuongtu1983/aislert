@@ -10,6 +10,7 @@ import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Properties;
 
 /**
  *
@@ -53,20 +54,19 @@ public class SerialUtil {
         return ports;
     }
 
-//    public SerialPort getSerialPort() {
-//        try {
-//            Enumeration<?> e = CommPortIdentifier.getPortIdentifiers();
-//            while (e.hasMoreElements()) {
-//                CommPortIdentifier id = (CommPortIdentifier) e.nextElement();
-//                if (id.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-//                    SerialPort sp = (SerialPort) id.open(this.getClass().getName(), 2000);
-//                    sp.setSerialPortParams(4800, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-//                    return sp;
-//                }
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
+    public static SerialPort initAlertPort(String configFileName, String portNameProperty, String baurateProperty) {
+        try {
+            Properties props = ConfigUtil.readConfig(configFileName);
+            if (props != null) {
+                String portName = props.getProperty(portNameProperty);
+                String baudrate = props.getProperty(baurateProperty);
+                if (portName != null && !portName.isEmpty() && baudrate != null && !baudrate.isEmpty()) {
+                    return (new SerialUtil()).getSerialPort(portName, Integer.parseInt(baudrate));
+                }
+            }
+        } catch (Exception ex) {
+
+        }
+        return null;
+    }
 }

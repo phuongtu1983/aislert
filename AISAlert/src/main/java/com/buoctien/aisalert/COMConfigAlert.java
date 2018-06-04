@@ -51,14 +51,14 @@ public class COMConfigAlert extends HttpServlet {
             throws ServletException, IOException {
         try {
             String fileName = this.getServletContext().getRealPath("/config.properties");
-            String aisPort = request.getParameter("aisPort");
-            if (aisPort != null && !aisPort.isEmpty()) {
+            String save = request.getParameter("save");
+            if (save != null && !save.isEmpty()) {
                 try {
                     Properties props = new Properties();
-                    props.setProperty("ais_port", request.getParameter("aisPort"));
-                    props.setProperty("ais_baudrate", request.getParameter("aisBaudrate"));
-                    props.setProperty("wireless_port", request.getParameter("wirelessPort"));
-                    props.setProperty("wireless_baudrate", request.getParameter("wirelessBaudrate"));
+                    props.setProperty("ais_port", request.getParameter("aisPort") == null ? "" : request.getParameter("aisPort"));
+                    props.setProperty("ais_baudrate", request.getParameter("aisBaudrate") == null ? "" : request.getParameter("aisBaudrate"));
+                    props.setProperty("wireless_port", request.getParameter("wirelessPort") == null ? "" : request.getParameter("wirelessPort"));
+                    props.setProperty("wireless_baudrate", request.getParameter("wirelessBaudrate") == null ? "" : request.getParameter("wirelessBaudrate"));
                     ConfigUtil.saveConfig(fileName, props);
                 } catch (Exception ex) {
                 }

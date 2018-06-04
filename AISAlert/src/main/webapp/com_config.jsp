@@ -74,7 +74,12 @@
                         <input type='text' name='wirelessBaudrate' value='<%=wirelessBaudrate%>'>
                     </td>
                 </tr>
-                <tr><td colspan="3"><input type="submit" value="Submit"/></td></tr>
+                <tr>
+                    <td colspan="3">
+                        <input type="submit" value="Submit"/>
+                        <input type="hidden" name="save" value="1"/>
+                    </td>
+                </tr>
             </table>
         </form>
     </body>

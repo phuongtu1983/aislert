@@ -7,11 +7,9 @@ package com.buoctien.aisalert;
 
 import com.buoctien.aisalert.bean.AlertBean;
 import com.buoctien.aisalert.util.ArduinoUtil;
-import com.buoctien.aisalert.util.ConfigUtil;
 import com.buoctien.aisalert.util.SerialUtil;
 import com.buoctien.aisalert.util.TimerUtil;
 import gnu.io.SerialPort;
-import java.util.Properties;
 import java.util.TimerTask;
 
 /**
@@ -66,18 +64,6 @@ public class AlertTimerTask extends TimerTask {
     }
 
     private SerialPort initAlertPort() {
-        try {
-            Properties props = ConfigUtil.readConfig(configFileName);
-            if (props != null) {
-                String portName = props.getProperty("wireless_port");
-                String baudrate = props.getProperty("wireless_baudrate");
-                if (portName != null && !portName.isEmpty() && baudrate != null && !baudrate.isEmpty()) {
-                    return (new SerialUtil()).getSerialPort(portName, Integer.parseInt(baudrate));
-                }
-            }
-        } catch (Exception ex) {
-
-        }
-        return null;
+        return SerialUtil.initAlertPort(configFileName, "wireless_port", "wireless_baudrate");
     }
 }
