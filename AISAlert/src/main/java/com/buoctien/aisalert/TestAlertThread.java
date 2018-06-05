@@ -18,9 +18,11 @@ import java.util.Properties;
 public class TestAlertThread extends Thread {
 
     String configFileName = "";
+    String action = "";
 
-    public TestAlertThread(String configFileName) {
+    public TestAlertThread(String configFileName, String action) {
         this.configFileName = configFileName;
+        this.action = action;
     }
 
     @Override
@@ -33,26 +35,24 @@ public class TestAlertThread extends Thread {
             SerialPort port = serialUtil.getSerialPort(aisPort, Integer.parseInt(aisBaudrate));
             if (port != null) {
                 OutputStream outputStream = port.getOutputStream();
-                outputStream.write(65);
-                outputStream.write(66);
-                outputStream.write(67);
-                outputStream.write(68);
-                outputStream.write(69);
-                outputStream.write(70);
-                outputStream.write(71);
-                outputStream.write(72);
-                
-                Thread.sleep(10000);
-                
-                outputStream.write(97);
-                outputStream.write(98);
-                outputStream.write(99);
-                outputStream.write(100);
-                outputStream.write(101);
-                outputStream.write(102);
-                outputStream.write(103);
-                outputStream.write(104);
-                
+                if (!this.action.isEmpty()) {
+                    if (this.action.equals("red")) {
+                        outputStream.write(65);
+                    } else if (this.action.equals("rednormal")) {
+                        outputStream.write(66);
+                    } else if (this.action.equals("redemergency")) {
+                        outputStream.write(67);
+                    } else if (this.action.equals("yellow")) {
+                        outputStream.write(68);
+                    } else if (this.action.equals("yellownormal")) {
+                        outputStream.write(69);
+                    } else if (this.action.equals("yellowemergency")) {
+                        outputStream.write(70);
+                    } else if (this.action.equals("off")) {
+                        outputStream.write(71);
+                    }
+                }
+
                 outputStream.close();
                 port.close();
                 port = null;

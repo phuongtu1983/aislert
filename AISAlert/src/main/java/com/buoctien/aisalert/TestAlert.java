@@ -44,17 +44,33 @@ public class TestAlert extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try{
+        try {
             String tested = request.getParameter("tested");
+            String action = "";
             if (tested != null && !tested.isEmpty()) {
+                if (request.getParameter("red") != null) {
+                    action="red";
+                } else if (request.getParameter("rednormal") != null) {
+                    action="rednormal";
+                }else if (request.getParameter("redemergency") != null) {
+                    action="redemergency";
+                }else if (request.getParameter("yellow") != null) {
+                    action="yellow";
+                }else if (request.getParameter("yellownormal") != null) {
+                    action="yellownormal";
+                }else if (request.getParameter("yellowemergency") != null) {
+                    action="yellowemergency";
+                }else if (request.getParameter("off") != null) {
+                    action="off";
+                }
                 String configFileName = this.getServletContext().getRealPath("/config.properties");
-                TestAlertThread thread = new TestAlertThread(configFileName);
+                TestAlertThread thread = new TestAlertThread(configFileName, action);
                 thread.run();
             }
             RequestDispatcher dispatcher = request.getRequestDispatcher("test_alert.jsp");
             dispatcher.forward(request, response);
-        }catch(Exception ex){
-            
+        } catch (Exception ex) {
+
         }
     }
 
