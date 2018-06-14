@@ -29,6 +29,10 @@
         <servlet-name>MainPage</servlet-name>
         <servlet-class>com.buoctien.aisalert.MainPage</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ControlServlet</servlet-name>
+        <servlet-class>com.buoctien.aisalert.ControlServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>OnLoadServlet</servlet-name>
         <url-pattern>/OnLoadServlet</url-pattern>
@@ -52,6 +56,10 @@
     <servlet-mapping>
         <servlet-name>MainPage</servlet-name>
         <url-pattern>/mainpage.do</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ControlServlet</servlet-name>
+        <url-pattern>/control.do</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

@@ -37,5 +37,6 @@ public class StaticBean {
     
     public static final String PROPERTIES = "properties";
     public static final String COM_PORTS = "comports";
+    public static final String ON_OFF = "onoff";
 
 }

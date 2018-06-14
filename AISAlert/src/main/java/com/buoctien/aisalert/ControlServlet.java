@@ -1,11 +1,11 @@
+package com.buoctien.aisalert;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.buoctien.aisalert;
 
-import com.buoctien.aisalert.bean.StaticBean;
 import java.io.IOException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -17,8 +17,9 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author DELL
  */
-public class MapServlet extends HttpServlet {
+public class ControlServlet extends HttpServlet {
 
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -45,12 +46,18 @@ public class MapServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            request.setAttribute(StaticBean.ON_OFF, PublicObjects.isTurnOn() == true ? 1 : 0);
-            RequestDispatcher dispatcher = request.getRequestDispatcher("map.jsp");
+            String submited = request.getParameter("submited");
+            if (submited != null && !submited.isEmpty()) {
+                if (request.getParameter("turnon") != null) {
+                    PublicObjects.initObjects(this.getServletContext());
+                } else if (request.getParameter("turnoff") != null) {
+                    PublicObjects.destroyObjects();
+                }
+            }
+            RequestDispatcher dispatcher = request.getRequestDispatcher("mapservlet.do");
             dispatcher.forward(request, response);
         } catch (Exception ex) {
-            // I/O error
-            System.out.print("Exception: " + ex.toString());
+
         }
     }
 }
