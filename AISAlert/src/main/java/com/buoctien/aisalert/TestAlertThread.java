@@ -29,8 +29,8 @@ public class TestAlertThread extends Thread {
     public void run() {
         try {
             Properties props = ConfigUtil.readConfig(configFileName);
-            String aisPort = props.getProperty("ais_port");
-            String aisBaudrate = props.getProperty("ais_baudrate");
+            String aisPort = props.getProperty("wireless_port");
+            String aisBaudrate = props.getProperty("wireless_baudrate");
             SerialUtil serialUtil = new SerialUtil();
             SerialPort port = serialUtil.getSerialPort(aisPort, Integer.parseInt(aisBaudrate));
             if (port != null) {

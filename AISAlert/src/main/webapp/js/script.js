@@ -56,7 +56,7 @@ function success()
      drawCircle(10.664184868961435, 106.79679543725299, 200);
      */
     drawCircle(10.663402010340304, 106.79608941078186, 1000);
-    enableGetAISAjax();
+//    enableGetAISAjax();
 }
 
 function getAISAjax() {
@@ -130,7 +130,7 @@ function drawCircle(lat, lon, radius) {
 
 function enableGetAISAjax() {
     if (ajaxInterval == null)
-        ajaxInterval = window.setInterval(getAISAjax, 4000);
+        ajaxInterval = window.setInterval(getAISAjax, 1000);
 }
 
 function disableGetAISAjax() {

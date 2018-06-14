@@ -33,7 +33,7 @@ public class OnLoadServlet extends HttpServlet {
                 new AISObjectList();
                 aisTimer = new AISTimerTask(aisDataPort, configFileName, writtenFileName);
                 aisTimer.run();
-                aisTimer.schedule(0, 10000);
+                aisTimer.schedule(0, 5000);
             }
             if (alertTimer == null) {
                 alertTimer = new AlertTimerTask(configFileName);

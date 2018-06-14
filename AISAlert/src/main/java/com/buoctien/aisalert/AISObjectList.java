@@ -8,6 +8,7 @@ package com.buoctien.aisalert;
 import com.buoctien.aisalert.bean.AISBean;
 import com.buoctien.aisalert.bean.AlertBean;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  *
@@ -69,8 +70,17 @@ public class AISObjectList {
     public static AlertBean getAlert() {
         AISBean obj = null;
         AlertBean resultBean = new AlertBean();
+        long currentMilisec = new Date().getTime();
+        long hours = 0;
         for (int i = 0; i < aisList.size(); i++) {
             obj = (AISBean) aisList.get(i);
+            if (obj.getMilisec() != 0) {
+                hours = (currentMilisec - obj.getMilisec()) / (60 * 60 * 1000) % 24;
+                if (hours >= 2) {
+                    aisList.remove(i);
+                    continue;
+                }
+            }
             if (AISBean.RED_ALERT.equals(obj.getAlertArea()) || AISBean.YELLOW_ALERT.equals(obj.getAlertArea())) {
                 resultBean.setAlertArea(obj.getAlertArea());
                 if (obj.getShipType() >= 60 && obj.getShipType() <= 89 && obj.getShipType() != 70) {
@@ -83,6 +93,9 @@ public class AISObjectList {
                     resultBean.setSoundType(1); // am thanh khong don dap
                 } else {
                     resultBean.setSoundType(0); // tat am thanh
+                }
+                if (AISBean.RED_ALERT.equals(obj.getAlertArea())) {
+                    break;
                 }
             }
         }

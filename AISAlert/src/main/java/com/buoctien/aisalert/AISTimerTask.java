@@ -48,12 +48,12 @@ public class AISTimerTask extends TimerTask {
     @Override
     public void run() {
         try {
-//            if (dataPort == null) {
-//                dataPort = SerialUtil.initAlertPort(configFileName, "ais_port", "ais_baudrate");
-//                if (dataPort == null) {
-//                    return;
-//                }
-//            }
+            if (dataPort == null) {
+                dataPort = SerialUtil.initAlertPort(configFileName, "ais_port", "ais_baudrate");
+                if (dataPort == null) {
+                    return;
+                }
+            }
             if (aisThread == null || aisThread.isInterrupted()) {
                 aisThread = new AISThread(writtenFileName, dataPort);
                 aisThread.start();

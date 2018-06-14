@@ -21,6 +21,7 @@ public class AISBean {
     private int navigation;
     private String name;
     private String alertArea;
+    private long milisec;
 
     public String getMMSI() {
         return MMSI;
@@ -61,7 +62,7 @@ public class AISBean {
         this.alertArea = "";
     }
 
-    public AISBean(String MMSI, int navStatus, Position position, int shipType, String alertArea, double distance) {
+    public AISBean(String MMSI, int navStatus, Position position, int shipType, String alertArea, double distance, long milisec) {
         this.MMSI = MMSI;
         this.navStatus = navStatus;
         this.position = position;
@@ -70,6 +71,7 @@ public class AISBean {
         this.alertArea = alertArea;
         this.distance = distance;
         this.navigation = 0;
+        this.milisec = milisec;
     }
 
     public int getNavStatus() {
@@ -110,6 +112,14 @@ public class AISBean {
 
     public void setNavigation(int navigation) {
         this.navigation = navigation;
+    }
+
+    public long getMilisec() {
+        return milisec;
+    }
+
+    public void setMilisec(long milisec) {
+        this.milisec = milisec;
     }
 
     public static final String RED_ALERT = "RED";

@@ -1,7 +1,7 @@
-#define relay1 2  //red light
-#define relay2 3  //yellow light
-#define relay3 4  //normal sound
-#define relay4 5  //emergency sound
+#define relay1 13  //red light
+#define relay2 12  //yellow light
+#define relay3 11  //normal sound
+#define relay4 10  //emergency sound
 
 int oldRelay;
 

@@ -27,6 +27,7 @@ import dk.dma.ais.reader.AisReader;
 import dk.dma.enav.model.geometry.Position;
 import gnu.io.SerialPort;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.function.Consumer;
 
 /**
@@ -50,9 +51,10 @@ public class AISThread extends Thread {
     @Override
     public void run() {
         try {
-//            runFromSerialPort();
-            createEmulatorData();
-            handleEmulateData();
+            runFromSerialPort();
+//            createEmulatorData();
+//            handleEmulateData();
+            this.stoped = true;
         } catch (Exception ex) {
             this.stoped = true;
             System.out.println("run : " + ex);
@@ -63,7 +65,7 @@ public class AISThread extends Thread {
     public boolean isStoped() {
         return stoped;
     }
-    
+
     private void runFromSerialPort() {
         try {
             AisReader reader = AISUtil.readFromSerialPort(dataPort);
@@ -99,6 +101,10 @@ public class AISThread extends Thread {
         try {
             AISBean aisBean = acceptAisMessage(aisMessage);
             String key = String.valueOf(aisBean.getMMSI());
+            AISBean dateOldBean = AISObjectList.get(key);
+            if (dateOldBean != null) {
+                dateOldBean.setMilisec(new Date().getTime());
+            }
             if (aisBean.getPosition() != null) {
                 boolean result = checkOutsideArea(aisBean.getPosition());
                 if (result) { // nam ngoai khu vuc hien thi
@@ -119,7 +125,7 @@ public class AISThread extends Thread {
                         oldBean.setAlertArea(AISBean.RED_ALERT);
                     } else {
                         AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
-                                aisBean.getPosition(), aisBean.getShipType(), AISBean.RED_ALERT, distance));
+                                aisBean.getPosition(), aisBean.getShipType(), AISBean.RED_ALERT, distance, new Date().getTime()));
                     }
                 } else {// khong nam trong khu vuc 200m
                     result = checkWithinArea500(aisBean.getPosition());
@@ -137,7 +143,7 @@ public class AISThread extends Thread {
                             }
                         } else {
                             AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
-                                    aisBean.getPosition(), aisBean.getShipType(), AISBean.YELLOW_ALERT, distance));
+                                    aisBean.getPosition(), aisBean.getShipType(), AISBean.YELLOW_ALERT, distance, new Date().getTime()));
                         }
                     } else { // nam ngoai khu vuc 500m
                         // nen nam trong khu vuc hien thi (500 - 1000)
@@ -150,7 +156,7 @@ public class AISThread extends Thread {
                             oldBean.setAlertArea("");
                         } else {
                             AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
-                                    aisBean.getPosition(), aisBean.getShipType(), "", distance));
+                                    aisBean.getPosition(), aisBean.getShipType(), "", distance, new Date().getTime()));
                         }
                     }
                 }
