@@ -20,7 +20,7 @@ public class StaticBean {
 
     public static final int OutsideRadius = 1000;
     public static final int YellowRadius = 520;
-    public static final int RedRadius = 200;
+    public static final int RedRadius = 314;
 
     public static final int YellowPointQuantity = 5;
     public static final ArrayList<Coordinates> ArrayCenterPoint = new ArrayList<Coordinates>(

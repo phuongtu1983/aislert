@@ -114,8 +114,8 @@ public class AISThread extends Thread {
                     }
                     return;
                 }
-                result = checkWithinArea200(aisBean.getPosition());
-                if (result) { // nam trong khu vuc 200m
+                result = checkWithinArea300(aisBean.getPosition());
+                if (result) { // nam trong khu vuc 300m
                     AISBean oldBean = AISObjectList.get(key);
                     double distance = getDistance(aisBean.getPosition());
                     if (oldBean != null) {
@@ -127,9 +127,9 @@ public class AISThread extends Thread {
                         AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
                                 aisBean.getPosition(), aisBean.getShipType(), AISBean.RED_ALERT, distance, new Date().getTime()));
                     }
-                } else {// khong nam trong khu vuc 200m
+                } else {// khong nam trong khu vuc 300m
                     result = checkWithinArea500(aisBean.getPosition());
-                    if (result) { // nam trong khu vuc tu 200m den 500m
+                    if (result) { // nam trong khu vuc tu 300m den 500m
                         AISBean oldBean = AISObjectList.get(key);
                         double distance = getDistance(aisBean.getPosition());
                         if (oldBean != null) {
@@ -252,7 +252,7 @@ public class AISThread extends Thread {
         return false;
     }
 
-    private boolean checkWithinArea200(dk.dma.enav.model.geometry.Position position) {
+    private boolean checkWithinArea300(dk.dma.enav.model.geometry.Position position) {
         try {
             Coordinates boatPosition = new Coordinates(position.getLatitude(), position.getLongitude());
             Coordinates center = null;
@@ -263,8 +263,8 @@ public class AISThread extends Thread {
                 }
             }
         } catch (Exception ex) {
-            System.out.println("checkWithinArea200 : " + ex);
-            FileUtil.writeToFile(writtenFileName, "checkWithinArea200 : " + ex);
+            System.out.println("checkWithinArea300 : " + ex);
+            FileUtil.writeToFile(writtenFileName, "checkWithinArea300 : " + ex);
         }
         return false;
     }
