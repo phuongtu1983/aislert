@@ -62,8 +62,9 @@ public class AISMapJsonServlet extends HttpServlet {
                 if (!jsonResult.isEmpty()) {
                     jsonResult += ",";
                 }
-                jsonResult += "{" + "\"name\":\"" + obj.getName() + "\",\"latitude\":" + latitude
-                        + ",\"longtitude\":" + longtitude + ",\"shipType\":" + obj.getShipType() + "}";
+                jsonResult += "{" + "\"name\":\"" + obj.getName() + "\",\"id\":\"" + obj.getMMSI()
+                        + "\",\"latitude\":" + latitude + ",\"longtitude\":" + longtitude
+                        + ",\"navigationImage\":" + obj.getNavigationImage() + ",\"shipType\":" + obj.getShipType() + "}";
             }
             jsonResult = "{\"alert\":\"" + AISObjectList.getAlert().getAlertArea() + "\",\"aisList\":[" + jsonResult + "]}";
 

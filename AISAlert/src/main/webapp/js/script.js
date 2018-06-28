@@ -1,6 +1,8 @@
 var map;
 var markers = [];
 var ajaxInterval = null;
+var imagevs = "images/vs.png";
+var imagesv = "images/sv.png";
 $(document).ready(function () {
     success();
 });
@@ -35,7 +37,16 @@ function success()
         {lat: 10.666939568202169, lng: 106.79552481736926}
     ];
     drawPolygon(triangleCoords, 'red');
-/*    
+
+    triangleCoords = [
+        {lat: 10.666268527714273, lng: 106.79630532860756},
+        {lat: 10.663871198480797, lng: 106.79908946156502},
+        {lat: 10.660950622337852, lng: 106.7959512770176},
+        {lat: 10.663276805517713, lng: 106.79308265447617},
+        {lat: 10.666268527714273, lng: 106.79630532860756}
+    ];
+    drawPolygon(triangleCoords, 'red');
+    /*    
      // yellow
      drawCircle(10.66260333459467, 106.79513587939925, 520);
      drawCircle(10.662226400982233, 106.79475031443121, 520);
@@ -54,9 +65,10 @@ function success()
      drawCircle(10.664393792645135, 106.79700437380211, 314);
      drawCircle(10.664600020294783, 106.79722331065, 314);
      drawCircle(10.664184868961435, 106.79679543725299, 314);
-*/     
+     */
     drawCircle(10.663402010340304, 106.79608941078186, 1000);
-//    enableGetAISAjax();
+    markers = [];
+    enableGetAISAjax();
 }
 
 function getAISAjax() {
@@ -68,29 +80,82 @@ function getAISAjax() {
         mimeType: 'application/json',
 
         success: function (json) {
-            clearMarkers();
-            markers = [];
+//            clearMarkers();
+//            markers = [];
+            var currentdate = new Date();
             var data = json.aisList;
             $("#alertSpan").css("background-color", json.alert);
             $.each(data, function (index, boat) {
                 var location = new google.maps.LatLng(parseFloat(boat.latitude), parseFloat(boat.longtitude));
-                addMarker(location, boat.name + ":" + boat.shipType);
+                addMarker(location, boat.name + ":" + boat.shipType, boat.id, currentdate, boat.navigationImage);
             });
+            clearOldMarker(currentdate);
         },
         error: function (data, status, er) {
         }
     });
 }
 
-function addMarker(googleLatLng, title) {
-    var markerOptn = {
-        position: googleLatLng,
-        map: map,
-        title: title
-    };
+function addMarker(googleLatLng, title, id, updatedId, navigationImage) {
+    var length = markers.length;
+    var obj;
+    for (var i = 0; i < length; i++) {
+        obj = markers[i];
+        if (obj.id == id) {
+            obj.setPosition(googleLatLng);
+            obj.updatedId = updatedId;
+            obj.title = title;
+            if (obj.navigationImage == 0 && navigationImage != 0) {
+                obj.navigationImage = navigationImage;
+                if (navigationImage > 0)
+                    obj.setIcon(imagevs);
+                else
+                    obj.setIcon(imagesv);
+            }
+            return;
+        }
+    }
+    var markerOptn;
+    var image;
+    if (navigationImage > 0)
+        image = imagevs;
+    else
+        image = imagesv;
+    if (navigationImage == 0)
+        markerOptn = {
+            position: googleLatLng,
+            map: map,
+            title: title,
+            id: id,
+            updatedId: updatedId,
+            navigationImage: navigationImage
+        };
+    else
+        markerOptn = {
+            position: googleLatLng,
+            map: map,
+            title: title,
+            icon: image,
+            id: id,
+            updatedId: updatedId,
+            navigationImage: navigationImage
+        };
 
     var marker = new google.maps.Marker(markerOptn);
     markers.push(marker);
+}
+
+function clearOldMarker(updatedId) {
+    var length = markers.length;
+    var obj;
+    for (var i = length - 1; i >= 0; i--) {
+        obj = markers[i];
+        if (obj.updatedId == updatedId) {
+            continue;
+        }
+        obj.setMap(null);
+        delete markers[i];
+    }
 }
 
 function clearMarkers() {

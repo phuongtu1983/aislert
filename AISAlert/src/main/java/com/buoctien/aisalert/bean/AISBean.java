@@ -19,6 +19,7 @@ public class AISBean {
     private int shipType;
     private double distance;
     private int navigation;
+    private int navigationImage;
     private String name;
     private String alertArea;
     private long milisec;
@@ -54,23 +55,27 @@ public class AISBean {
 
     public AISBean() {
         this.MMSI = "";
+        this.name = "";
         this.navStatus = -1;
         this.position = null;
         this.shipType = -1;
         this.navigation = 0;
-        this.distance = 0;
+        this.navigationImage = 0;
         this.alertArea = "";
+        this.distance = 0;
+        this.milisec = 0;
     }
 
-    public AISBean(String MMSI, int navStatus, Position position, int shipType, String alertArea, double distance, long milisec) {
+    public AISBean(String MMSI, int navStatus, Position position, int shipType, String alertArea, double distance, long milisec, int navigationImage) {
         this.MMSI = MMSI;
+        this.name = "";
         this.navStatus = navStatus;
         this.position = position;
         this.shipType = shipType;
         this.navigation = 0;
+        this.navigationImage = navigationImage;
         this.alertArea = alertArea;
         this.distance = distance;
-        this.navigation = 0;
         this.milisec = milisec;
     }
 
@@ -120,6 +125,14 @@ public class AISBean {
 
     public void setMilisec(long milisec) {
         this.milisec = milisec;
+    }
+
+    public int getNavigationImage() {
+        return navigationImage;
+    }
+
+    public void setNavigationImage(int navigationImage) {
+        this.navigationImage = navigationImage;
     }
 
     public static final String RED_ALERT = "RED";

@@ -114,8 +114,8 @@ public class AISThread extends Thread {
                     }
                     return;
                 }
-                result = checkWithinArea300(aisBean.getPosition());
-                if (result) { // nam trong khu vuc 300m
+                result = checkWithinArea(aisBean.getPosition(), StaticBean.RedSmallRadius);
+                if (result) { // nam trong khu vuc 200m
                     AISBean oldBean = AISObjectList.get(key);
                     double distance = getDistance(aisBean.getPosition());
                     if (oldBean != null) {
@@ -123,13 +123,17 @@ public class AISThread extends Thread {
                         oldBean.setNavigation(distance < oldBean.getDistance() ? -1 : 1);
                         oldBean.setDistance(distance);
                         oldBean.setAlertArea(AISBean.RED_ALERT);
+                        if (oldBean.getNavigationImage() == 0) {
+                            oldBean.setNavigationImage(aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1);
+                        }
                     } else {
                         AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
-                                aisBean.getPosition(), aisBean.getShipType(), AISBean.RED_ALERT, distance, new Date().getTime()));
+                                aisBean.getPosition(), aisBean.getShipType(), AISBean.RED_ALERT, distance,
+                                new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1));
                     }
-                } else {// khong nam trong khu vuc 300m
-                    result = checkWithinArea500(aisBean.getPosition());
-                    if (result) { // nam trong khu vuc tu 300m den 500m
+                } else {// khong nam trong khu vuc 200m
+                    result = checkWithinArea(aisBean.getPosition(), StaticBean.RedRadius);
+                    if (result) { // nam trong khu vuc tu 200m den 300m
                         AISBean oldBean = AISObjectList.get(key);
                         double distance = getDistance(aisBean.getPosition());
                         if (oldBean != null) {
@@ -139,24 +143,55 @@ public class AISThread extends Thread {
                             if (oldBean.getNavigation() > 0) {
                                 oldBean.setAlertArea("");
                             } else {
-                                oldBean.setAlertArea(AISBean.YELLOW_ALERT);
+                                oldBean.setAlertArea(AISBean.RED_ALERT);
+                            }
+                            if (oldBean.getNavigationImage() == 0) {
+                                oldBean.setNavigationImage(aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1);
                             }
                         } else {
                             AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
-                                    aisBean.getPosition(), aisBean.getShipType(), AISBean.YELLOW_ALERT, distance, new Date().getTime()));
+                                    aisBean.getPosition(), aisBean.getShipType(), AISBean.RED_ALERT, distance,
+                                    new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1));
                         }
-                    } else { // nam ngoai khu vuc 500m
-                        // nen nam trong khu vuc hien thi (500 - 1000)
-                        AISBean oldBean = AISObjectList.get(key);
-                        double distance = getDistance(aisBean.getPosition());
-                        if (oldBean != null) {
-                            oldBean.setPosition(aisBean.getPosition());
-                            oldBean.setNavigation(distance < oldBean.getDistance() ? -1 : 1);
-                            oldBean.setDistance(distance);
-                            oldBean.setAlertArea("");
-                        } else {
-                            AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
-                                    aisBean.getPosition(), aisBean.getShipType(), "", distance, new Date().getTime()));
+                    } else {// khong nam trong khu vuc 300m
+                        result = checkWithinArea500(aisBean.getPosition());
+                        if (result) { // nam trong khu vuc tu 300m den 500m
+                            AISBean oldBean = AISObjectList.get(key);
+                            double distance = getDistance(aisBean.getPosition());
+                            if (oldBean != null) {
+                                oldBean.setPosition(aisBean.getPosition());
+                                oldBean.setNavigation(distance < oldBean.getDistance() ? -1 : 1);
+                                oldBean.setDistance(distance);
+                                if (oldBean.getNavigation() > 0) {
+                                    oldBean.setAlertArea("");
+                                } else {
+                                    oldBean.setAlertArea(AISBean.YELLOW_ALERT);
+                                }
+                                if (oldBean.getNavigationImage() == 0) {
+                                    oldBean.setNavigationImage(aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1);
+                                }
+                            } else {
+                                AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
+                                        aisBean.getPosition(), aisBean.getShipType(), AISBean.YELLOW_ALERT, distance,
+                                        new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1));
+                            }
+                        } else { // nam ngoai khu vuc 500m
+                            // nen nam trong khu vuc hien thi (500 - 1000)
+                            AISBean oldBean = AISObjectList.get(key);
+                            double distance = getDistance(aisBean.getPosition());
+                            if (oldBean != null) {
+                                oldBean.setPosition(aisBean.getPosition());
+                                oldBean.setNavigation(distance < oldBean.getDistance() ? -1 : 1);
+                                oldBean.setDistance(distance);
+                                oldBean.setAlertArea("");
+                                if (oldBean.getNavigationImage() == 0) {
+                                    oldBean.setNavigationImage(aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1);
+                                }
+                            } else {
+                                AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
+                                        aisBean.getPosition(), aisBean.getShipType(), "", distance,
+                                        new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1));
+                            }
                         }
                     }
                 }
@@ -252,13 +287,13 @@ public class AISThread extends Thread {
         return false;
     }
 
-    private boolean checkWithinArea300(dk.dma.enav.model.geometry.Position position) {
+    private boolean checkWithinArea(dk.dma.enav.model.geometry.Position position, int radius) {
         try {
             Coordinates boatPosition = new Coordinates(position.getLatitude(), position.getLongitude());
             Coordinates center = null;
             for (int i = 0; i < StaticBean.ArrayCenterPoint.size(); i++) {
                 center = StaticBean.ArrayCenterPoint.get(i);
-                if (CoordinatesCalculations.isInCircleArea(boatPosition, center, StaticBean.RedRadius)) {
+                if (CoordinatesCalculations.isInCircleArea(boatPosition, center, radius)) {
                     return true;
                 }
             }
@@ -276,67 +311,122 @@ public class AISThread extends Thread {
     }
 
     private void createEmulatorData() {
-        createMessage(10.657903, 106.805794);
-        createMessage(10.658346, 106.8047);
-        createMessage(10.658788, 106.803756);
-        createMessage(10.658978, 106.803198);
-        createMessage(10.659337, 106.802597);
-        createMessage(10.659526, 106.802018);
-        createMessage(10.659758, 106.801417);
-        createMessage(10.660307, 106.800473);
-        createMessage(10.660297, 106.800344);
-        createMessage(10.660402, 106.80013);
-        createMessage(10.660476, 106.799937);
-        createMessage(10.660603, 106.799765);
-        createMessage(10.660697, 106.79954);
-        createMessage(10.660792, 106.799325);
-        createMessage(10.660898, 106.799143);
-        createMessage(10.661024, 106.798982);
-        createMessage(10.661151, 106.798724);
-        createMessage(10.661277, 106.798456);
-        createMessage(10.661425, 106.798242);
-        createMessage(10.661573, 106.798059);
-        createMessage(10.661731, 106.797866);
-        createMessage(10.661826, 106.797705);
-        createMessage(10.661952, 106.797512);
-        createMessage(10.662131, 106.797351);
-        createMessage(10.662216, 106.797147);
-        createMessage(10.662353, 106.796997);
-        createMessage(10.662500, 106.796804);
-        createMessage(10.662680, 106.796664);
-        createMessage(10.662901, 106.796396);
-        createMessage(10.663112, 106.796246);
-        createMessage(10.663486, 106.795822);
-        createMessage(10.663876, 106.795415);
-        createMessage(10.664193, 106.795136);
-        createMessage(10.664488, 106.794824);
-        createMessage(10.664720, 106.794545);
-        createMessage(10.664904, 106.794356);
-        createMessage(10.665178, 106.794088);
-        createMessage(10.665336, 106.793906);
-        createMessage(10.665568, 106.79368);
-        createMessage(10.665737, 106.793487);
-        createMessage(10.666053, 106.79308);
-        createMessage(10.666264, 106.792726);
-        createMessage(10.666443, 106.792447);
-        createMessage(10.666686, 106.792082);
-        createMessage(10.666928, 106.791803);
-        createMessage(10.667076, 106.79147);
-        createMessage(10.667656, 106.790644);
-        createMessage(10.668183, 106.789936);
-        createMessage(10.668583, 106.789335);
-        createMessage(10.669005, 106.788756);
-        createMessage(10.669321, 106.78809);
-        createMessage(10.669827, 106.787146);
-        createMessage(10.670323, 106.786224);
-        createMessage(10.670628, 106.785344);
+        createMessage(123456789, 10.657903, 106.805794);
+        createMessage(123456789, 10.658346, 106.8047);
+        createMessage(123456789, 10.658788, 106.803756);
+        createMessage(987654321, 10.670628, 106.785344);
+        createMessage(123456789, 10.658978, 106.803198);
+        createMessage(987654321, 10.670323, 106.786224);
+        createMessage(123456789, 10.659337, 106.802597);
+        createMessage(987654321, 10.669827, 106.787146);
+        createMessage(123456789, 10.659526, 106.802018);
+        createMessage(123456789, 10.659758, 106.801417);
+        createMessage(987654321, 10.669321, 106.78809);
+        createMessage(987654321, 10.669005, 106.788756);
+        createMessage(987654321, 10.668583, 106.789335);
+        createMessage(123456789, 10.660307, 106.800473);
+        createMessage(987654321, 10.668183, 106.789936);
+        createMessage(123456789, 10.660297, 106.800344);
+        createMessage(987654321, 10.667656, 106.790644);
+        createMessage(123456789, 10.660402, 106.80013);
+        createMessage(987654321, 10.667076, 106.79147);
+        createMessage(123456789, 10.660476, 106.799937);
+        createMessage(123456789, 10.660603, 106.799765);
+        createMessage(123456789, 10.660697, 106.79954);
+        createMessage(987654321, 10.666928, 106.791803);
+        createMessage(987654321, 10.666686, 106.792082);
+        createMessage(987654321, 10.666443, 106.792447);
+        createMessage(987654321, 10.666264, 106.792726);
+        createMessage(123456789, 10.660792, 106.799325);
+        createMessage(987654321, 10.666053, 106.79308);
+        createMessage(123456789, 10.660898, 106.799143);
+        createMessage(987654321, 10.665737, 106.793487);
+        createMessage(123456789, 10.661024, 106.798982);
+        createMessage(987654321, 10.665568, 106.79368);
+        createMessage(123456789, 10.661151, 106.798724);
+        createMessage(987654321, 10.665336, 106.793906);
+        createMessage(123456789, 10.661277, 106.798456);
+        createMessage(987654321, 10.665178, 106.794088);
+        createMessage(123456789, 10.661425, 106.798242);
+        createMessage(987654321, 10.664904, 106.794356);
+        createMessage(123456789, 10.661573, 106.798059);
+        createMessage(123456789, 10.661731, 106.797866);
+        createMessage(123456789, 10.661826, 106.797705);
+        createMessage(987654321, 10.664720, 106.794545);
+        createMessage(123456789, 10.661952, 106.797512);
+        createMessage(987654321, 10.664488, 106.794824);
+        createMessage(123456789, 10.662131, 106.797351);
+        createMessage(987654321, 10.664193, 106.795136);
+        createMessage(123456789, 10.662216, 106.797147);
+        createMessage(987654321, 10.664193, 106.795136);
+        createMessage(987654321, 10.663876, 106.795415);
+        createMessage(987654321, 10.663486, 106.795822);
+        createMessage(123456789, 10.662353, 106.796997);
+        createMessage(987654321, 10.663112, 106.796246);
+        createMessage(123456789, 10.662500, 106.796804);
+        createMessage(987654321, 10.662901, 106.796396);
+        createMessage(123456789, 10.662680, 106.796664);
+        createMessage(987654321, 10.662680, 106.796664);
+        createMessage(123456789, 10.662901, 106.796396);
+        createMessage(987654321, 10.662500, 106.796804);
+        createMessage(123456789, 10.663112, 106.796246);
+        createMessage(987654321, 10.662353, 106.796997);
+        createMessage(123456789, 10.663486, 106.795822);
+        createMessage(123456789, 10.663876, 106.795415);
+        createMessage(123456789, 10.664193, 106.795136);
+        createMessage(987654321, 10.662216, 106.797147);
+        createMessage(987654321, 10.662131, 106.797351);
+        createMessage(987654321, 10.661952, 106.797512);
+        createMessage(123456789, 10.664488, 106.794824);
+        createMessage(987654321, 10.661826, 106.797705);
+        createMessage(123456789, 10.664720, 106.794545);
+        createMessage(987654321, 10.661731, 106.797866);
+        createMessage(123456789, 10.664904, 106.794356);
+        createMessage(987654321, 10.661573, 106.798059);
+        createMessage(123456789, 10.665178, 106.794088);
+        createMessage(987654321, 10.661425, 106.798242);
+        createMessage(123456789, 10.665336, 106.793906);
+        createMessage(987654321, 10.661277, 106.798456);
+        createMessage(123456789, 10.665568, 106.79368);
+        createMessage(987654321, 10.661151, 106.798724);
+        createMessage(123456789, 10.665737, 106.793487);
+        createMessage(987654321, 10.661024, 106.798982);
+        createMessage(123456789, 10.666053, 106.79308);
+        createMessage(987654321, 10.660898, 106.799143);
+        createMessage(123456789, 10.666264, 106.792726);
+        createMessage(987654321, 10.660792, 106.799325);
+        createMessage(123456789, 10.666443, 106.792447);
+        createMessage(987654321, 10.660697, 106.79954);
+        createMessage(123456789, 10.666686, 106.792082);
+        createMessage(123456789, 10.666928, 106.791803);
+        createMessage(123456789, 10.667076, 106.79147);
+        createMessage(987654321, 10.660603, 106.799765);
+        createMessage(987654321, 10.660476, 106.799937);
+        createMessage(987654321, 10.660402, 106.80013);
+        createMessage(987654321, 10.660297, 106.800344);
+        createMessage(987654321, 10.660307, 106.800473);
+        createMessage(987654321, 10.659758, 106.801417);
+        createMessage(123456789, 10.667656, 106.790644);
+        createMessage(123456789, 10.668183, 106.789936);
+        createMessage(123456789, 10.668583, 106.789335);
+        createMessage(987654321, 10.659526, 106.802018);
+        createMessage(123456789, 10.669005, 106.788756);
+        createMessage(987654321, 10.659337, 106.802597);
+        createMessage(123456789, 10.669321, 106.78809);
+        createMessage(987654321, 10.658978, 106.803198);
+        createMessage(123456789, 10.669827, 106.787146);
+        createMessage(987654321, 10.658788, 106.803756);
+        createMessage(123456789, 10.670323, 106.786224);
+        createMessage(123456789, 10.670628, 106.785344);
+        createMessage(987654321, 10.658346, 106.8047);
+        createMessage(987654321, 10.657903, 106.805794);
     }
 
-    private void createMessage(double lat, double lon) {
+    private void createMessage(int id, double lat, double lon) {
         AisMessage1 aisMessage = null;
         AisPosition pos = null;
         aisMessage = new AisMessage1();
-        aisMessage.setUserId(123456789);
+        aisMessage.setUserId(id);
         pos = new AisPosition();
         pos.setLatitude(Math.round(lat * 10000.0 * 60.0));
         pos.setLongitude(Math.round(lon * 10000.0 * 60.0));
@@ -349,7 +439,7 @@ public class AISThread extends Thread {
             AisMessage aisMessage = (AisMessage) emulatorAISData.get(i);
             aisMessageHandle(aisMessage);
             try {
-                Thread.sleep(6000);
+                Thread.sleep(2000);
             } catch (Exception ex) {
 
             }
