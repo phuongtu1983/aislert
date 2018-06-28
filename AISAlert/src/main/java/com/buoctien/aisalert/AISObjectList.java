@@ -101,4 +101,11 @@ public class AISObjectList {
         }
         return resultBean;
     }
+
+    public static void destroyObjects() {
+        if (aisList == null) {
+            return;
+        }
+        aisList.clear();
+    }
 }

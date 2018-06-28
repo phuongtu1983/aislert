@@ -56,6 +56,7 @@ public class PublicObjects {
                 alertTimer.cancel();
                 alertTimer = null;
             }
+            AISObjectList.destroyObjects();
             System.out.println("On Load Servlet stopped");
         } catch (Exception ex) {
 
