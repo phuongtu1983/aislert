@@ -8,11 +8,13 @@ package com.buoctien.aisalert;
 import com.buoctien.aisalert.bean.AISBean;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  *
@@ -52,8 +54,14 @@ public class AISMapJsonServlet extends HttpServlet {
             ArrayList list = AISObjectList.getList();
             AISBean obj = null;
             String jsonResult = "";
+            int[] allowNavigation = {0, 7, 8, 9, 10, 14};
+            SimpleDateFormat time_formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS");
+            String current_time_str = time_formatter.format(System.currentTimeMillis());
             for (int i = 0; i < list.size(); i++) {
                 obj = (AISBean) list.get(i);
+                if (!ArrayUtils.contains(allowNavigation, obj.getNavStatus())) {
+                    continue;
+                }
                 String latitude = "", longtitude = "";
                 if (obj.getPosition() != null) {
                     latitude = obj.getPosition().getLatitude() + "";
@@ -64,17 +72,16 @@ public class AISMapJsonServlet extends HttpServlet {
                 }
                 jsonResult += "{" + "\"name\":\"" + obj.getName() + "\",\"id\":\"" + obj.getMMSI()
                         + "\",\"latitude\":" + latitude + ",\"longtitude\":" + longtitude
+                        + ",\"distance\":" + obj.getDistance()
+                        + ",\"time\":\"" + current_time_str + "\""
                         + ",\"navigationImage\":" + obj.getNavigationImage() + ",\"shipType\":" + obj.getShipType() + "}";
             }
             jsonResult = "{\"alert\":\"" + AISObjectList.getAlert().getAlertArea() + "\",\"aisList\":[" + jsonResult + "]}";
 
             PrintWriter out = response.getWriter();
             out.print(jsonResult);
-//            System.out.println("jsonResult: " + jsonResult);
+            System.out.println("jsonResult: " + jsonResult);
         } catch (Exception ex) {
-
         }
-
     }
-
 }

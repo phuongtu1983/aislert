@@ -66,7 +66,7 @@ function success()
      drawCircle(10.664600020294783, 106.79722331065, 314);
      drawCircle(10.664184868961435, 106.79679543725299, 314);
      */
-    drawCircle(10.663402010340304, 106.79608941078186, 1000);
+    drawCircle(10.663402010340304, 106.79608941078186, 2000);
     markers = [];
     enableGetAISAjax();
 }
@@ -80,18 +80,24 @@ function getAISAjax() {
         mimeType: 'application/json',
 
         success: function (json) {
-//            clearMarkers();
-//            markers = [];
             var currentdate = new Date();
+            console.log("currentdate: " + currentdate.toLocaleString());
             var data = json.aisList;
             $("#alertSpan").css("background-color", json.alert);
+            console.log("json: " + JSON.stringify(json));
             $.each(data, function (index, boat) {
                 var location = new google.maps.LatLng(parseFloat(boat.latitude), parseFloat(boat.longtitude));
-                addMarker(location, boat.name + ":" + boat.shipType, boat.id, currentdate, boat.navigationImage);
+                console.log("time: " + boat.time);
+                console.log("boat location: " + boat.latitude + ", " + boat.longtitude);
+                var title = "name: " + boat.name + "; type: " + boat.shipType + "; distance: " + boat.distance;
+                console.log("title: " + title);
+                addMarker(location, title, boat.id, currentdate, boat.navigationImage);
+                console.log("addMarker done");
             });
             clearOldMarker(currentdate);
         },
         error: function (data, status, er) {
+            console.log("error: " + er);
         }
     });
 }
@@ -101,26 +107,35 @@ function addMarker(googleLatLng, title, id, updatedId, navigationImage) {
     var obj;
     for (var i = 0; i < length; i++) {
         obj = markers[i];
+//        console.log("obj.id: " + obj.id + ";id: " + id);
         if (obj.id == id) {
+            var oldPos = obj.getPosition();
             obj.setPosition(googleLatLng);
             obj.updatedId = updatedId;
             obj.title = title;
             if (obj.navigationImage == 0 && navigationImage != 0) {
-                obj.navigationImage = navigationImage;
+                obj.navigationImage = 1;
                 if (navigationImage > 0)
                     obj.setIcon(imagevs);
                 else
                     obj.setIcon(imagesv);
             }
+
+//            var flightPath = new google.maps.Polyline({
+//                path: [oldPos, googleLatLng],
+//                geodesic: true,
+//                strokeColor: '#FF0000',
+//                strokeOpacity: 1.0,
+//                strokeWeight: 2
+//            });
+//
+//            flightPath.setMap(map);
+
             return;
         }
     }
     var markerOptn;
     var image;
-    if (navigationImage > 0)
-        image = imagevs;
-    else
-        image = imagesv;
     if (navigationImage == 0)
         markerOptn = {
             position: googleLatLng,
@@ -131,15 +146,19 @@ function addMarker(googleLatLng, title, id, updatedId, navigationImage) {
             navigationImage: navigationImage
         };
     else
-        markerOptn = {
-            position: googleLatLng,
-            map: map,
-            title: title,
-            icon: image,
-            id: id,
-            updatedId: updatedId,
-            navigationImage: navigationImage
-        };
+    if (navigationImage > 0)
+        image = imagevs;
+    else
+        image = imagesv;
+    markerOptn = {
+        position: googleLatLng,
+        map: map,
+        title: title,
+        icon: image,
+        id: id,
+        updatedId: updatedId,
+        navigationImage: 1
+    };
 
     var marker = new google.maps.Marker(markerOptn);
     markers.push(marker);
@@ -202,7 +221,6 @@ function disableGetAISAjax() {
     if (ajaxInterval != null) {
         window.clearInterval(ajaxInterval);
         ajaxInterval = null;
-        alert('Đã tắt');
     }
     clearMarkers();
 }

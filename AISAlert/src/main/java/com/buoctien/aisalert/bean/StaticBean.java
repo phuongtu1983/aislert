@@ -18,7 +18,7 @@ public class StaticBean {
     public static final double MidPointLatitude = 10.663402010340304;
     public static double MidPointLongtitude = 106.79608941078186;
 
-    public static final int OutsideRadius = 1000;
+    public static final int OutsideRadius = 2000;
     public static final int YellowRadius = 520;
     public static final int RedRadius = 314;
     public static final int RedSmallRadius = 200;

@@ -65,6 +65,5 @@ public class AlertTimerTask extends TimerTask {
 
     private SerialPort initAlertPort() {
         return SerialUtil.initAlertPort(configFileName, "wireless_port", "wireless_baudrate");
-//    return null;
     }
 }

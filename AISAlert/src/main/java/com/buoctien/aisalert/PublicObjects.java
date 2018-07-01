@@ -31,7 +31,7 @@ public class PublicObjects {
                 new AISObjectList();
                 aisTimer = new AISTimerTask(aisDataPort, configFileName, writtenFileName);
                 aisTimer.run();
-                aisTimer.schedule(0, 5000);
+                aisTimer.schedule(0, 1000);
             }
             if (alertTimer == null) {
                 alertTimer = new AlertTimerTask(configFileName);

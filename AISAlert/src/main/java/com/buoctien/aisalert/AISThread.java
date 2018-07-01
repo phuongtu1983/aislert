@@ -29,6 +29,7 @@ import gnu.io.SerialPort;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.function.Consumer;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  *
@@ -94,6 +95,40 @@ public class AISThread extends Thread {
             this.stoped = true;
             System.out.println("runFromSerialPort : " + ex);
             FileUtil.writeToFile(writtenFileName, "runFromSerialPort : " + ex);
+        }
+    }
+
+    private void aisMessageHandle2(AisMessage aisMessage) {
+        try {
+            AISBean aisBean = acceptAisMessage(aisMessage);
+            String key = String.valueOf(aisBean.getMMSI());
+            if (aisBean.getName() != null) {
+                if (aisBean.getName().equals("")) {
+                    if (aisBean.getPosition() != null) {
+                        AISBean oldBean = AISObjectList.get(key);
+                        double distance = getDistance(aisBean.getPosition());
+                        if (oldBean != null) {
+                            oldBean.setPosition(aisBean.getPosition());
+                            oldBean.setNavigation(distance < oldBean.getDistance() ? -1 : 1);
+                            oldBean.setDistance(distance);
+                            oldBean.setAlertArea("");
+                            if (oldBean.getNavigationImage() == 0) {
+                                oldBean.setNavigationImage(aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1);
+                            }
+                        } else {
+                            String[] a = {"565439000", "574001750"};
+                            if (ArrayUtils.contains(a, key)) {
+                                AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
+                                        aisBean.getPosition(), aisBean.getShipType(), "", distance,
+                                        new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1));
+                            }
+                        }
+                    }
+
+                }
+            }
+        } catch (Exception ex) {
+
         }
     }
 
@@ -219,7 +254,6 @@ public class AISThread extends Thread {
                 bean.setPosition(pos);
             }
             getStrToWrite(aisMessage, bean);
-//            FileUtil.writeToFile(writtenFileName, aisMessage.reassemble());
         } catch (Exception ex) {
             System.out.println("acceptAisMessage : " + ex);
             FileUtil.writeToFile(writtenFileName, "acceptAisMessage : " + ex);

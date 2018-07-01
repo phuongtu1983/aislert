@@ -13,55 +13,15 @@ import javax.servlet.http.HttpServlet;
  */
 public class OnLoadServlet extends HttpServlet {
 
-//    private SerialPort aisDataPort = null;
-//    AISTimerTask aisTimer = null;
-//    AlertTimerTask alertTimer = null;
-
     @Override
     public void init() {
         System.out.println("On Load Servlet start");
-//        try {
-//            String configFileName = this.getServletContext().getRealPath("/config.properties");
-//            if (aisDataPort == null) {
-//                aisDataPort = SerialUtil.initAlertPort(configFileName, "ais_port", "ais_baudrate");
-//            }
-//            String writtenFileName = this.getServletContext().getRealPath("/result.txt");
-//            if (aisTimer == null) {
-//                new AISObjectList();
-//                aisTimer = new AISTimerTask(aisDataPort, configFileName, writtenFileName);
-//                aisTimer.run();
-//                aisTimer.schedule(0, 5000);
-//            }
-//            if (alertTimer == null) {
-//                alertTimer = new AlertTimerTask(configFileName);
-//                alertTimer.run();
-//                alertTimer.schedule(0, 2000);
-//            }
-//        } catch (Exception ex) {
-//        }
         PublicObjects.initObjects(this.getServletContext());
         System.out.println("On Load Servlet started");
     }
 
     @Override
     public void destroy() {
-//        try {
-//            if (aisDataPort != null) {
-//                aisDataPort.close();
-//                aisDataPort = null;
-//            }
-//            if (aisTimer != null) {
-//                aisTimer.cancel();
-//                aisTimer = null;
-//            }
-//            if (alertTimer != null) {
-//                alertTimer.cancel();
-//                alertTimer = null;
-//            }
-//            System.out.println("On Load Servlet stopped");
-//        } catch (Exception ex) {
-//
-//        }
         PublicObjects.destroyObjects();
         super.destroy();
     }
