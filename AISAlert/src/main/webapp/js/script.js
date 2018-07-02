@@ -81,23 +81,23 @@ function getAISAjax() {
 
         success: function (json) {
             var currentdate = new Date();
-            console.log("currentdate: " + currentdate.toLocaleString());
+//            console.log("currentdate: " + currentdate.toLocaleString());
             var data = json.aisList;
             $("#alertSpan").css("background-color", json.alert);
-            console.log("json: " + JSON.stringify(json));
+//            console.log("json: " + JSON.stringify(json));
             $.each(data, function (index, boat) {
+//                console.log("time: " + boat.time);
                 var location = new google.maps.LatLng(parseFloat(boat.latitude), parseFloat(boat.longtitude));
-                console.log("time: " + boat.time);
-                console.log("boat location: " + boat.latitude + ", " + boat.longtitude);
-                var title = "name: " + boat.name + "; type: " + boat.shipType + "; distance: " + boat.distance;
-                console.log("title: " + title);
+//                console.log("boat location: " + boat.latitude + ", " + boat.longtitude);
+                var title = "Name: " + boat.name + "; Distance: " + boat.distance+ " (m)";
+//                console.log("title: " + title);
                 addMarker(location, title, boat.id, currentdate, boat.navigationImage);
-                console.log("addMarker done");
+//                console.log("addMarker done");
             });
             clearOldMarker(currentdate);
         },
         error: function (data, status, er) {
-            console.log("error: " + er);
+            console.log("error: ", er);
         }
     });
 }
@@ -173,7 +173,7 @@ function clearOldMarker(updatedId) {
             continue;
         }
         obj.setMap(null);
-        delete markers[i];
+        markers.splice(i, 1);
     }
 }
 

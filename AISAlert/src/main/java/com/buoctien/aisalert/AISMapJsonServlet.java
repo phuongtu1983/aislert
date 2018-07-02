@@ -54,14 +54,14 @@ public class AISMapJsonServlet extends HttpServlet {
             ArrayList list = AISObjectList.getList();
             AISBean obj = null;
             String jsonResult = "";
-            int[] allowNavigation = {0, 7, 8, 9, 10, 14};
+//            int[] allowNavigation = {0, 7, 8, 9, 10, 14};
             SimpleDateFormat time_formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS");
             String current_time_str = time_formatter.format(System.currentTimeMillis());
             for (int i = 0; i < list.size(); i++) {
                 obj = (AISBean) list.get(i);
-                if (!ArrayUtils.contains(allowNavigation, obj.getNavStatus())) {
-                    continue;
-                }
+//                if (!ArrayUtils.contains(allowNavigation, obj.getNavStatus())) {
+//                    continue;
+//                }
                 String latitude = "", longtitude = "";
                 if (obj.getPosition() != null) {
                     latitude = obj.getPosition().getLatitude() + "";
@@ -72,7 +72,7 @@ public class AISMapJsonServlet extends HttpServlet {
                 }
                 jsonResult += "{" + "\"name\":\"" + obj.getName() + "\",\"id\":\"" + obj.getMMSI()
                         + "\",\"latitude\":" + latitude + ",\"longtitude\":" + longtitude
-                        + ",\"distance\":" + obj.getDistance()
+                        + ",\"distance\":" + (int) obj.getDistance()
                         + ",\"time\":\"" + current_time_str + "\""
                         + ",\"navigationImage\":" + obj.getNavigationImage() + ",\"shipType\":" + obj.getShipType() + "}";
             }

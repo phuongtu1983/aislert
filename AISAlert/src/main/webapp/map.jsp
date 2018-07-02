@@ -12,7 +12,7 @@ and open the template in the editor.
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="css/style.css" rel="stylesheet"/>
         <script src="js/jquery-3.3.1.min.js"></script>
-        <script src="http://maps.google.com/maps/api/js?sensor=true&key=AIzaSyDrAAurpEZNCEeHdIMZ1jJkMg8odoWZeVU"></script>
+        <script src="http://maps.google.com/maps/api/js?sensor=false&key=AIzaSyDrAAurpEZNCEeHdIMZ1jJkMg8odoWZeVU"></script>
         <script src="js/script.js"></script>
 
     </head>
