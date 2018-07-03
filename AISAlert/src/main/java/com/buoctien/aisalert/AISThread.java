@@ -30,26 +30,25 @@ import gnu.io.SerialPort;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.function.Consumer;
-import org.apache.commons.lang3.ArrayUtils;
 
 /**
  *
  * @author DELL
  */
 public class AISThread extends Thread {
-
+    
     private final SerialPort dataPort;
     private final String writtenFileName;
     private boolean stoped;
-
+    
     private ArrayList emulatorAISData = new ArrayList();
-
+    
     public AISThread(String writtenFileName, SerialPort dataPort) {
         this.writtenFileName = writtenFileName;
         this.dataPort = dataPort;
         this.stoped = false;
     }
-
+    
     @Override
     public void run() {
         try {
@@ -63,11 +62,11 @@ public class AISThread extends Thread {
             FileUtil.writeToFile(writtenFileName, "run : " + ex);
         }
     }
-
+    
     public boolean isStoped() {
         return stoped;
     }
-
+    
     private void runFromSerialPort() {
         try {
             AisReader reader = AISUtil.readFromSerialPort(dataPort);
@@ -87,7 +86,7 @@ public class AISThread extends Thread {
                 // Set down sample filter as recipient of doublet filered messages
                 MessageHandlerFilter doubletFilter = new MessageHandlerFilter(new DuplicateFilter(10));
                 doubletFilter.registerReceiver(downsampleFilter);
-
+                
                 reader.registerHandler(doubletFilter);
                 reader.start();
                 reader.join();
@@ -98,7 +97,7 @@ public class AISThread extends Thread {
             FileUtil.writeToFile(writtenFileName, "runFromSerialPort : " + ex);
         }
     }
-
+    
     private void aisMessageHandle(AisMessage aisMessage) {
         try {
             AISBean aisBean = acceptAisMessage(aisMessage);
@@ -128,13 +127,15 @@ public class AISThread extends Thread {
                         oldBean.setNavigation(distance < oldBean.getDistance() ? -1 : 1);
                         oldBean.setDistance(distance);
                         oldBean.setAlertArea(AISBean.RED_ALERT);
+                        oldBean.setShouldSimulated(1);
                         if (oldBean.getNavigationImage() == 0) {
                             oldBean.setNavigationImage(aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1);
                         }
                     } else {
                         AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
                                 aisBean.getPosition(), aisBean.getShipType(), AISBean.RED_ALERT, distance,
-                                new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1, aisBean.getSog()));
+                                new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1,
+                                aisBean.getSog(), 1));
                     }
                 } else {// khong nam trong khu vuc 200m
                     result = checkWithinArea(aisBean.getPosition(), StaticBean.RedRadius);
@@ -150,8 +151,10 @@ public class AISThread extends Thread {
                             oldBean.setDistance(distance);
                             if (oldBean.getNavigation() > 0) {
                                 oldBean.setAlertArea("");
+                                oldBean.setShouldSimulated(0);
                             } else {
                                 oldBean.setAlertArea(AISBean.RED_ALERT);
+                                oldBean.setShouldSimulated(1);
                             }
                             if (oldBean.getNavigationImage() == 0) {
                                 oldBean.setNavigationImage(aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1);
@@ -159,9 +162,10 @@ public class AISThread extends Thread {
                         } else {
                             AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
                                     aisBean.getPosition(), aisBean.getShipType(), AISBean.RED_ALERT, distance,
-                                    new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1, aisBean.getSog()));
+                                    new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1,
+                                    aisBean.getSog(), 1));
                         }
-                    } else {// khong nam trong khu vuc 300m
+                    } else {// nam ngoai khu vuc 300m
                         result = checkWithinArea500(aisBean.getPosition());
                         if (result) { // nam trong khu vuc tu 300m den 500m
                             AISBean oldBean = AISObjectList.get(key);
@@ -175,8 +179,10 @@ public class AISThread extends Thread {
                                 oldBean.setDistance(distance);
                                 if (oldBean.getNavigation() > 0) {
                                     oldBean.setAlertArea("");
+                                    oldBean.setShouldSimulated(0);
                                 } else {
                                     oldBean.setAlertArea(AISBean.YELLOW_ALERT);
+                                    oldBean.setShouldSimulated(1);
                                 }
                                 if (oldBean.getNavigationImage() == 0) {
                                     oldBean.setNavigationImage(aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1);
@@ -184,10 +190,11 @@ public class AISThread extends Thread {
                             } else {
                                 AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
                                         aisBean.getPosition(), aisBean.getShipType(), AISBean.YELLOW_ALERT, distance,
-                                        new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1, aisBean.getSog()));
+                                        new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1,
+                                        aisBean.getSog(), 1));
                             }
                         } else { // nam ngoai khu vuc 500m
-                            // nen nam trong khu vuc hien thi (500 - 1000)
+                            // nen nam trong khu vuc hien thi (500 - outside)
                             AISBean oldBean = AISObjectList.get(key);
                             double distance = getDistance(aisBean.getPosition());
                             if (oldBean != null) {
@@ -198,13 +205,15 @@ public class AISThread extends Thread {
                                 oldBean.setNavigation(distance < oldBean.getDistance() ? -1 : 1);
                                 oldBean.setDistance(distance);
                                 oldBean.setAlertArea("");
+                                oldBean.setShouldSimulated(0);
                                 if (oldBean.getNavigationImage() == 0) {
                                     oldBean.setNavigationImage(aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1);
                                 }
                             } else {
                                 AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
                                         aisBean.getPosition(), aisBean.getShipType(), "", distance,
-                                        new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1, aisBean.getSog()));
+                                        new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1,
+                                        aisBean.getSog(), 0));
                             }
                         }
                     }
@@ -223,7 +232,7 @@ public class AISThread extends Thread {
             FileUtil.writeToFile(writtenFileName, "aisMessageHandle : " + ex);
         }
     }
-
+    
     private AISBean acceptAisMessage(AisMessage aisMessage) {
         AISBean bean = new AISBean();
         bean.setMMSI(aisMessage.getUserId() + "");
@@ -239,7 +248,7 @@ public class AISThread extends Thread {
         }
         return bean;
     }
-
+    
     private String getStrToWrite(AisMessage aisMessage, AISBean aisBean) {
         String result = "";
         try {
@@ -275,7 +284,7 @@ public class AISThread extends Thread {
         }
         return result;
     }
-
+    
     private boolean checkOutsideArea(dk.dma.enav.model.geometry.Position position) {
         try {
             if (CoordinatesCalculations.getDistanceBetweenTwoPoints(new Coordinates(position.getLatitude(), position.getLongitude()), new Coordinates(StaticBean.MidPointLatitude, StaticBean.MidPointLongtitude)) > StaticBean.OutsideRadius) {
@@ -287,7 +296,7 @@ public class AISThread extends Thread {
         }
         return false;
     }
-
+    
     private boolean checkWithinArea500(dk.dma.enav.model.geometry.Position position) {
         try {
             Coordinates boatPosition = new Coordinates(position.getLatitude(), position.getLongitude());
@@ -304,7 +313,7 @@ public class AISThread extends Thread {
         }
         return false;
     }
-
+    
     private boolean checkWithinArea(dk.dma.enav.model.geometry.Position position, int radius) {
         try {
             Coordinates boatPosition = new Coordinates(position.getLatitude(), position.getLongitude());
@@ -321,13 +330,13 @@ public class AISThread extends Thread {
         }
         return false;
     }
-
+    
     private double getDistance(dk.dma.enav.model.geometry.Position newPost) {
         return CoordinatesCalculations.getDistanceBetweenTwoPoints(
                 new Coordinates(StaticBean.MidPointLatitude, StaticBean.MidPointLongtitude),
                 new Coordinates(newPost.getLatitude(), newPost.getLongitude()));
     }
-
+    
     private void createEmulatorData() {
         createMessage(123456789, 10.657903, 106.805794);
         createMessage(123456789, 10.658346, 106.8047);
@@ -439,7 +448,7 @@ public class AISThread extends Thread {
         createMessage(987654321, 10.658346, 106.8047);
         createMessage(987654321, 10.657903, 106.805794);
     }
-
+    
     private void createMessage(int id, double lat, double lon) {
         AisMessage1 aisMessage = null;
         AisPosition pos = null;
@@ -449,17 +458,18 @@ public class AISThread extends Thread {
         pos.setLatitude(Math.round(lat * 10000.0 * 60.0));
         pos.setLongitude(Math.round(lon * 10000.0 * 60.0));
         aisMessage.setPos(pos);
+        aisMessage.setSog(5);
         emulatorAISData.add(aisMessage);
     }
-
+    
     private void handleEmulateData() {
         for (int i = 0; i < emulatorAISData.size(); i++) {
             AisMessage aisMessage = (AisMessage) emulatorAISData.get(i);
             aisMessageHandle(aisMessage);
             try {
-                Thread.sleep(2000);
+                Thread.sleep(3000);
             } catch (Exception ex) {
-
+                
             }
         }
         this.stoped = true;

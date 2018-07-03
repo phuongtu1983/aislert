@@ -26,6 +26,7 @@ public class AISBean {
     private String alertArea;
     private long milisec;
     private long sog;
+    private int shouldSimulated;
 
     public String getMMSI() {
         return MMSI;
@@ -68,9 +69,11 @@ public class AISBean {
         this.distance = 0;
         this.milisec = 0;
         this.sog = 0;
+        this.shouldSimulated = 0;
     }
 
-    public AISBean(String MMSI, int navStatus, Position position, int shipType, String alertArea, double distance, long milisec, int navigationImage, long sog) {
+    public AISBean(String MMSI, int navStatus, Position position, int shipType, String alertArea, double distance,
+             long milisec, int navigationImage, long sog, int shouldSimulated) {
         this.MMSI = MMSI;
         this.name = "";
         this.navStatus = navStatus;
@@ -82,6 +85,7 @@ public class AISBean {
         this.distance = distance;
         this.milisec = milisec;
         this.sog = sog;
+        this.shouldSimulated = shouldSimulated;
     }
 
     public int getNavStatus() {
@@ -155,6 +159,14 @@ public class AISBean {
 
     public void setSimulatePosition(Coordinates simulatePosition) {
         this.simulatePosition = simulatePosition;
+    }
+
+    public int getShouldSimulated() {
+        return shouldSimulated;
+    }
+
+    public void setShouldSimulated(int shouldSimulated) {
+        this.shouldSimulated = shouldSimulated;
     }
 
     public static final String RED_ALERT = "RED";

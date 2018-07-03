@@ -11,10 +11,8 @@ import com.buoctien.aisalert.bean.StaticBean;
 import com.buoctien.aisalert.geoposition.Coordinates;
 import com.buoctien.aisalert.geoposition.CoordinatesCalculations;
 import com.buoctien.aisalert.util.ArduinoUtil;
-import com.buoctien.aisalert.util.GeographicUtil;
 import com.buoctien.aisalert.util.SerialUtil;
 import com.buoctien.aisalert.util.TimerUtil;
-import dk.dma.enav.model.geometry.Position;
 import gnu.io.SerialPort;
 import java.util.ArrayList;
 import java.util.Date;
@@ -92,13 +90,16 @@ public class AlertTimerTask extends TimerTask {
             Coordinates centerPoint = new Coordinates(StaticBean.AutoMidPointLatitude, StaticBean.AutoMidPointLongtitude);
             for (int i = 0; i < list.size(); i++) {
                 obj = (AISBean) list.get(i);
+                if (obj.getShouldSimulated() == 0) {
+                    continue;
+                }
                 diffSec = (currentMilisec - obj.getMilisec()) / 1000;
                 if (diffSec > autoTime) {
                     distance = getDistance(obj.getSimulatePosition() == null ? new Coordinates(obj.getPosition().getLatitude(), obj.getPosition().getLongitude()) : obj.getSimulatePosition());
                     obj.setDistance(distance);
                     coor = new Coordinates(obj.getPosition().getLatitude(), obj.getPosition().getLongitude());
-                    double bearing = GeographicUtil.getBearing(coor, centerPoint);
-                    Coordinates nextPoint = GeographicUtil.getNextPoint(coor, bearing, distance - StaticBean.KNOT * diffSec);
+                    double bearing = CoordinatesCalculations.getBearing(coor, centerPoint);
+                    Coordinates nextPoint = CoordinatesCalculations.getNextPoint(coor, bearing, distance - StaticBean.KNOT * diffSec);
                     if (nextPoint != null) {
                         obj.setSimulatePosition(nextPoint);
                     }
