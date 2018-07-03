@@ -102,14 +102,13 @@ public class AISThread extends Thread {
         try {
             AISBean aisBean = acceptAisMessage(aisMessage);
             String key = String.valueOf(aisBean.getMMSI());
-            AISBean dateOldBean = AISObjectList.get(key);
-            if (dateOldBean != null) {
-                dateOldBean.setMilisec(new Date().getTime());
+            AISBean oldBean = AISObjectList.get(key);
+            if (oldBean != null) {
+                oldBean.setMilisec(new Date().getTime());
             }
             if (aisBean.getPosition() != null) {
                 boolean result = checkOutsideArea(aisBean.getPosition());
                 if (result) { // nam ngoai khu vuc hien thi
-                    AISBean oldBean = AISObjectList.get(key);
                     if (oldBean != null) {
                         AISObjectList.removeObject(oldBean);
                     }
@@ -117,7 +116,6 @@ public class AISThread extends Thread {
                 }
                 result = checkWithinArea(aisBean.getPosition(), StaticBean.RedSmallRadius);
                 if (result) { // nam trong khu vuc 200m
-                    AISBean oldBean = AISObjectList.get(key);
                     double distance = getDistance(aisBean.getPosition());
                     if (oldBean != null) {
                         oldBean.setPosition(aisBean.getPosition());
@@ -140,7 +138,6 @@ public class AISThread extends Thread {
                 } else {// khong nam trong khu vuc 200m
                     result = checkWithinArea(aisBean.getPosition(), StaticBean.RedRadius);
                     if (result) { // nam trong khu vuc tu 200m den 300m
-                        AISBean oldBean = AISObjectList.get(key);
                         double distance = getDistance(aisBean.getPosition());
                         if (oldBean != null) {
                             oldBean.setPosition(aisBean.getPosition());
@@ -168,7 +165,6 @@ public class AISThread extends Thread {
                     } else {// nam ngoai khu vuc 300m
                         result = checkWithinArea500(aisBean.getPosition());
                         if (result) { // nam trong khu vuc tu 300m den 500m
-                            AISBean oldBean = AISObjectList.get(key);
                             double distance = getDistance(aisBean.getPosition());
                             if (oldBean != null) {
                                 oldBean.setPosition(aisBean.getPosition());
@@ -195,7 +191,6 @@ public class AISThread extends Thread {
                             }
                         } else { // nam ngoai khu vuc 500m
                             // nen nam trong khu vuc hien thi (500 - outside)
-                            AISBean oldBean = AISObjectList.get(key);
                             double distance = getDistance(aisBean.getPosition());
                             if (oldBean != null) {
                                 oldBean.setPosition(aisBean.getPosition());
@@ -220,7 +215,6 @@ public class AISThread extends Thread {
                 }
             } else {
                 if (aisBean.getShipType() != -1) {
-                    AISBean oldBean = AISObjectList.get(key);
                     if (oldBean != null) {
                         oldBean.setShipType(aisBean.getShipType());
                         oldBean.setName(aisBean.getName());
