@@ -18,6 +18,9 @@ public class StaticBean {
     public static final double MidPointLatitude = 10.663402010340304;
     public static double MidPointLongtitude = 106.79608941078186;
 
+    public static final double AutoMidPointLatitude = 10.664123;
+    public static double AutoMidPointLongtitude = 106.796672;
+
     public static final int OutsideRadius = 2000;
     public static final int YellowRadius = 520;
     public static final int RedRadius = 314;
@@ -35,9 +38,12 @@ public class StaticBean {
                     new Coordinates(10.663977952040657, 106.7965698537846),
                     new Coordinates(10.664393792645135, 106.79700437380211),
                     new Coordinates(10.664600020294783, 106.79722331065)));
-    
+
     public static final String PROPERTIES = "properties";
     public static final String COM_PORTS = "comports";
     public static final String ON_OFF = "onoff";
+    public static int IS_AUTO = 0;
+    public static int AUTO_TIME = 10;
+    public static double KNOT = 0.514444444; // m/s
 
 }

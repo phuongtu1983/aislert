@@ -3,6 +3,7 @@ var markers = [];
 var ajaxInterval = null;
 var imagevs = "images/vs.png";
 var imagesv = "images/sv.png";
+var imagesi = "images/si.png";
 $(document).ready(function () {
     success();
 });
@@ -81,18 +82,12 @@ function getAISAjax() {
 
         success: function (json) {
             var currentdate = new Date();
-//            console.log("currentdate: " + currentdate.toLocaleString());
             var data = json.aisList;
             $("#alertSpan").css("background-color", json.alert);
-//            console.log("json: " + JSON.stringify(json));
             $.each(data, function (index, boat) {
-//                console.log("time: " + boat.time);
                 var location = new google.maps.LatLng(parseFloat(boat.latitude), parseFloat(boat.longtitude));
-//                console.log("boat location: " + boat.latitude + ", " + boat.longtitude);
-                var title = "Name: " + boat.name + "; Distance: " + boat.distance+ " (m)";
-//                console.log("title: " + title);
-                addMarker(location, title, boat.id, currentdate, boat.navigationImage);
-//                console.log("addMarker done");
+                var title = "Name: " + boat.name + "; Distance: " + boat.distance + " (m)";
+                addMarker(location, title, boat.id, currentdate, boat.navigationImage, boat.isSimulation);
             });
             clearOldMarker(currentdate);
         },
@@ -102,18 +97,20 @@ function getAISAjax() {
     });
 }
 
-function addMarker(googleLatLng, title, id, updatedId, navigationImage) {
+function addMarker(googleLatLng, title, id, updatedId, navigationImage, isSimulation) {
     var length = markers.length;
     var obj;
     for (var i = 0; i < length; i++) {
         obj = markers[i];
 //        console.log("obj.id: " + obj.id + ";id: " + id);
         if (obj.id == id) {
-            var oldPos = obj.getPosition();
+//            var oldPos = obj.getPosition();
             obj.setPosition(googleLatLng);
             obj.updatedId = updatedId;
             obj.title = title;
-            if (obj.navigationImage == 0 && navigationImage != 0) {
+            if (isSimulation == 1)
+                obj.setIcon(imagesi);
+            else if (obj.navigationImage == 0 && navigationImage != 0) {
                 obj.navigationImage = 1;
                 if (navigationImage > 0)
                     obj.setIcon(imagevs);
@@ -146,10 +143,14 @@ function addMarker(googleLatLng, title, id, updatedId, navigationImage) {
             navigationImage: navigationImage
         };
     else
-    if (navigationImage > 0)
-        image = imagevs;
-    else
-        image = imagesv;
+    if (isSimulation == 1)
+        image = imagesi;
+    else {
+        if (navigationImage > 0)
+            image = imagevs;
+        else
+            image = imagesv;
+    }
     markerOptn = {
         position: googleLatLng,
         map: map,

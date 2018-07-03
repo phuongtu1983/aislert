@@ -5,8 +5,11 @@
  */
 package com.buoctien.aisalert;
 
+import com.buoctien.aisalert.bean.StaticBean;
+import com.buoctien.aisalert.util.ConfigUtil;
 import com.buoctien.aisalert.util.SerialUtil;
 import gnu.io.SerialPort;
+import java.util.Properties;
 import javax.servlet.ServletContext;
 
 /**
@@ -37,6 +40,16 @@ public class PublicObjects {
                 alertTimer = new AlertTimerTask(configFileName);
                 alertTimer.run();
                 alertTimer.schedule(0, 1000);
+            }
+
+            try {
+                Properties props = ConfigUtil.readConfig(configFileName);
+                if (props != null) {
+                    StaticBean.IS_AUTO = Integer.parseInt(props.getProperty("is_auto"));
+                    StaticBean.AUTO_TIME = Integer.parseInt(props.getProperty("auto_time"));
+                }
+            } catch (Exception ex) {
+
             }
         } catch (Exception ex) {
         }

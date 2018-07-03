@@ -5,6 +5,7 @@
  */
 package com.buoctien.aisalert.bean;
 
+import com.buoctien.aisalert.geoposition.Coordinates;
 import dk.dma.enav.model.geometry.Position;
 
 /**
@@ -16,6 +17,7 @@ public class AISBean {
     private String MMSI;
     private int navStatus;
     private Position position;
+    private Coordinates simulatePosition;
     private int shipType;
     private double distance;
     private int navigation;
@@ -23,6 +25,7 @@ public class AISBean {
     private String name;
     private String alertArea;
     private long milisec;
+    private long sog;
 
     public String getMMSI() {
         return MMSI;
@@ -64,9 +67,10 @@ public class AISBean {
         this.alertArea = "";
         this.distance = 0;
         this.milisec = 0;
+        this.sog = 0;
     }
 
-    public AISBean(String MMSI, int navStatus, Position position, int shipType, String alertArea, double distance, long milisec, int navigationImage) {
+    public AISBean(String MMSI, int navStatus, Position position, int shipType, String alertArea, double distance, long milisec, int navigationImage, long sog) {
         this.MMSI = MMSI;
         this.name = "";
         this.navStatus = navStatus;
@@ -77,6 +81,7 @@ public class AISBean {
         this.alertArea = alertArea;
         this.distance = distance;
         this.milisec = milisec;
+        this.sog = sog;
     }
 
     public int getNavStatus() {
@@ -93,6 +98,7 @@ public class AISBean {
 
     public void setPosition(Position position) {
         this.position = position;
+        this.simulatePosition = null;
     }
 
     public int getShipType() {
@@ -133,6 +139,22 @@ public class AISBean {
 
     public void setNavigationImage(int navigationImage) {
         this.navigationImage = navigationImage;
+    }
+
+    public long getSog() {
+        return sog;
+    }
+
+    public void setSog(long sog) {
+        this.sog = sog;
+    }
+
+    public Coordinates getSimulatePosition() {
+        return simulatePosition;
+    }
+
+    public void setSimulatePosition(Coordinates simulatePosition) {
+        this.simulatePosition = simulatePosition;
     }
 
     public static final String RED_ALERT = "RED";

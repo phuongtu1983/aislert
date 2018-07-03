@@ -22,6 +22,7 @@ import dk.dma.ais.message.AisPosition;
 import dk.dma.ais.message.AisPositionMessage;
 import dk.dma.ais.message.AisStaticCommon;
 import dk.dma.ais.message.IPositionMessage;
+import dk.dma.ais.message.IVesselPositionMessage;
 import dk.dma.ais.message.UTCDateResponseMessage;
 import dk.dma.ais.reader.AisReader;
 import dk.dma.enav.model.geometry.Position;
@@ -121,6 +122,9 @@ public class AISThread extends Thread {
                     double distance = getDistance(aisBean.getPosition());
                     if (oldBean != null) {
                         oldBean.setPosition(aisBean.getPosition());
+                        if (aisBean.getSog() != 0) {
+                            oldBean.setSog(aisBean.getSog());
+                        }
                         oldBean.setNavigation(distance < oldBean.getDistance() ? -1 : 1);
                         oldBean.setDistance(distance);
                         oldBean.setAlertArea(AISBean.RED_ALERT);
@@ -130,7 +134,7 @@ public class AISThread extends Thread {
                     } else {
                         AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
                                 aisBean.getPosition(), aisBean.getShipType(), AISBean.RED_ALERT, distance,
-                                new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1));
+                                new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1, aisBean.getSog()));
                     }
                 } else {// khong nam trong khu vuc 200m
                     result = checkWithinArea(aisBean.getPosition(), StaticBean.RedRadius);
@@ -139,6 +143,9 @@ public class AISThread extends Thread {
                         double distance = getDistance(aisBean.getPosition());
                         if (oldBean != null) {
                             oldBean.setPosition(aisBean.getPosition());
+                            if (aisBean.getSog() != 0) {
+                                oldBean.setSog(aisBean.getSog());
+                            }
                             oldBean.setNavigation(distance < oldBean.getDistance() ? -1 : 1);
                             oldBean.setDistance(distance);
                             if (oldBean.getNavigation() > 0) {
@@ -152,7 +159,7 @@ public class AISThread extends Thread {
                         } else {
                             AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
                                     aisBean.getPosition(), aisBean.getShipType(), AISBean.RED_ALERT, distance,
-                                    new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1));
+                                    new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1, aisBean.getSog()));
                         }
                     } else {// khong nam trong khu vuc 300m
                         result = checkWithinArea500(aisBean.getPosition());
@@ -161,6 +168,9 @@ public class AISThread extends Thread {
                             double distance = getDistance(aisBean.getPosition());
                             if (oldBean != null) {
                                 oldBean.setPosition(aisBean.getPosition());
+                                if (aisBean.getSog() != 0) {
+                                    oldBean.setSog(aisBean.getSog());
+                                }
                                 oldBean.setNavigation(distance < oldBean.getDistance() ? -1 : 1);
                                 oldBean.setDistance(distance);
                                 if (oldBean.getNavigation() > 0) {
@@ -174,7 +184,7 @@ public class AISThread extends Thread {
                             } else {
                                 AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
                                         aisBean.getPosition(), aisBean.getShipType(), AISBean.YELLOW_ALERT, distance,
-                                        new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1));
+                                        new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1, aisBean.getSog()));
                             }
                         } else { // nam ngoai khu vuc 500m
                             // nen nam trong khu vuc hien thi (500 - 1000)
@@ -182,6 +192,9 @@ public class AISThread extends Thread {
                             double distance = getDistance(aisBean.getPosition());
                             if (oldBean != null) {
                                 oldBean.setPosition(aisBean.getPosition());
+                                if (aisBean.getSog() != 0) {
+                                    oldBean.setSog(aisBean.getSog());
+                                }
                                 oldBean.setNavigation(distance < oldBean.getDistance() ? -1 : 1);
                                 oldBean.setDistance(distance);
                                 oldBean.setAlertArea("");
@@ -191,7 +204,7 @@ public class AISThread extends Thread {
                             } else {
                                 AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
                                         aisBean.getPosition(), aisBean.getShipType(), "", distance,
-                                        new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1));
+                                        new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1, aisBean.getSog()));
                             }
                         }
                     }
@@ -250,6 +263,11 @@ public class AISThread extends Thread {
 //                IPositionMessage mes = (IPositionMessage) aisMessage;
             } else if (aisMessage instanceof AisMessage12) {
                 // 6, 7, 8, 10, 12, 13, 14, 17
+            } else if (aisMessage instanceof IVesselPositionMessage) {
+                IVesselPositionMessage mes = (IVesselPositionMessage) aisMessage;
+                if (mes.isSogValid()) {
+                    aisBean.setSog(mes.getSog());
+                }
             }
         } catch (Exception ex) {
             System.out.println("getStrToWrite : " + ex);
