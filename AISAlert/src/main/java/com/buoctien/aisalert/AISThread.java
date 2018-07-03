@@ -98,40 +98,6 @@ public class AISThread extends Thread {
         }
     }
 
-    private void aisMessageHandle2(AisMessage aisMessage) {
-        try {
-            AISBean aisBean = acceptAisMessage(aisMessage);
-            String key = String.valueOf(aisBean.getMMSI());
-            if (aisBean.getName() != null) {
-                if (aisBean.getName().equals("")) {
-                    if (aisBean.getPosition() != null) {
-                        AISBean oldBean = AISObjectList.get(key);
-                        double distance = getDistance(aisBean.getPosition());
-                        if (oldBean != null) {
-                            oldBean.setPosition(aisBean.getPosition());
-                            oldBean.setNavigation(distance < oldBean.getDistance() ? -1 : 1);
-                            oldBean.setDistance(distance);
-                            oldBean.setAlertArea("");
-                            if (oldBean.getNavigationImage() == 0) {
-                                oldBean.setNavigationImage(aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1);
-                            }
-                        } else {
-                            String[] a = {"565439000", "574001750"};
-                            if (ArrayUtils.contains(a, key)) {
-                                AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
-                                        aisBean.getPosition(), aisBean.getShipType(), "", distance,
-                                        new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1));
-                            }
-                        }
-                    }
-
-                }
-            }
-        } catch (Exception ex) {
-
-        }
-    }
-
     private void aisMessageHandle(AisMessage aisMessage) {
         try {
             AISBean aisBean = acceptAisMessage(aisMessage);
