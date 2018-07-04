@@ -60,7 +60,7 @@ public class AlertTimerTask extends TimerTask {
             this.alertDataPort = initAlertPort();
         }
         if (alertDataPort == null) {
-            return;
+//            return;
         }
 
         if (StaticBean.IS_AUTO == 1) {
@@ -99,7 +99,7 @@ public class AlertTimerTask extends TimerTask {
                     obj.setDistance(distance);
                     coor = new Coordinates(obj.getPosition().getLatitude(), obj.getPosition().getLongitude());
                     double bearing = CoordinatesCalculations.getBearing(coor, centerPoint);
-                    Coordinates nextPoint = CoordinatesCalculations.getNextPoint(coor, bearing, distance - StaticBean.KNOT * diffSec);
+                    Coordinates nextPoint = CoordinatesCalculations.getNextPoint(coor, bearing, obj.getSog() * StaticBean.KNOT * diffSec);
                     if (nextPoint != null) {
                         obj.setSimulatePosition(nextPoint);
                     }

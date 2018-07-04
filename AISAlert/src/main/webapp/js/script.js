@@ -84,9 +84,10 @@ function getAISAjax() {
             var currentdate = new Date();
             var data = json.aisList;
             $("#alertSpan").css("background-color", json.alert);
+            console.log("json: " + JSON.stringify(json));
             $.each(data, function (index, boat) {
                 var location = new google.maps.LatLng(parseFloat(boat.latitude), parseFloat(boat.longtitude));
-                var title = "Name: " + boat.name + "; Distance: " + boat.distance + " (m)";
+                var title = "Name: " + boat.name + "; Report Age: " + boat.reportAge + "; Distance: " + boat.distance + " (m)";
                 addMarker(location, title, boat.id, currentdate, boat.navigationImage, boat.isSimulation);
             });
             clearOldMarker(currentdate);
@@ -104,13 +105,17 @@ function addMarker(googleLatLng, title, id, updatedId, navigationImage, isSimula
         obj = markers[i];
 //        console.log("obj.id: " + obj.id + ";id: " + id);
         if (obj.id == id) {
-//            var oldPos = obj.getPosition();
+            var oldPos = obj.getPosition();
             obj.setPosition(googleLatLng);
             obj.updatedId = updatedId;
             obj.title = title;
-            if (isSimulation == 1)
+            console.log("isSimulation: " + isSimulation);
+            console.log("obj.navigationImage: " + obj.navigationImage);
+            console.log("navigationImage: " + navigationImage);
+            if (isSimulation == 1) {
                 obj.setIcon(imagesi);
-            else if (obj.navigationImage == 0 && navigationImage != 0) {
+                obj.navigationImage = 0;
+            } else if (obj.navigationImage == 0 && navigationImage != 0) {
                 obj.navigationImage = 1;
                 if (navigationImage > 0)
                     obj.setIcon(imagevs);
@@ -118,15 +123,15 @@ function addMarker(googleLatLng, title, id, updatedId, navigationImage, isSimula
                     obj.setIcon(imagesv);
             }
 
-//            var flightPath = new google.maps.Polyline({
-//                path: [oldPos, googleLatLng],
-//                geodesic: true,
-//                strokeColor: '#FF0000',
-//                strokeOpacity: 1.0,
-//                strokeWeight: 2
-//            });
-//
-//            flightPath.setMap(map);
+            var flightPath = new google.maps.Polyline({
+                path: [oldPos, googleLatLng],
+                geodesic: true,
+                strokeColor: '#FF0000',
+                strokeOpacity: 1.0,
+                strokeWeight: 2
+            });
+
+            flightPath.setMap(map);
 
             return;
         }
