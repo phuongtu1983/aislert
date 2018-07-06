@@ -8,7 +8,6 @@ package com.buoctien.aisalert;
 import com.buoctien.aisalert.bean.AISBean;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.servlet.ServletException;
@@ -54,11 +53,9 @@ public class AISMapJsonServlet extends HttpServlet {
             ArrayList list = AISObjectList.getList();
             AISBean obj = null;
             String jsonResult = "";
-            int isSimulation = 0;
             long currentMilisec = new Date().getTime();
             long diffSec = 0;
-            SimpleDateFormat time_formatter = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
-            String current_time_str = time_formatter.format(System.currentTimeMillis());
+            String diffSecString = "";
 //            int[] allowNavigation = {0, 7, 8, 9, 10, 14};
             for (int i = 0; i < list.size(); i++) {
                 obj = (AISBean) list.get(i);
@@ -67,14 +64,20 @@ public class AISMapJsonServlet extends HttpServlet {
 //                }
                 String latitude = "", longtitude = "";
                 diffSec = (currentMilisec - obj.getMilisec()) / 1000;
-                if (obj.getSimulatePosition() != null) {
-                    latitude = obj.getSimulatePosition().getLatitude() + "";
-                    longtitude = obj.getSimulatePosition().getLongitude() + "";
-                    isSimulation = 1;
-                } else if (obj.getPosition() != null) {
+                if (diffSec < 60) {
+                    diffSecString = diffSec + " s";
+                } else {
+                    diffSecString = (int) diffSec / 60 + " min";
+                    if (diffSec > 0) {
+                        diffSecString += " " + diffSec % 60 + " s";
+                    }
+                }
+                if (obj.getSimulatedPosition() == null) {
                     latitude = obj.getPosition().getLatitude() + "";
                     longtitude = obj.getPosition().getLongitude() + "";
-                    isSimulation = 0;
+                } else {
+                    latitude = obj.getSimulatedPosition().getLatitude() + "";
+                    longtitude = obj.getSimulatedPosition().getLongitude() + "";
                 }
                 if (!jsonResult.isEmpty()) {
                     jsonResult += ",";
@@ -82,15 +85,15 @@ public class AISMapJsonServlet extends HttpServlet {
                 jsonResult += "{" + "\"name\":\"" + obj.getName() + "\",\"id\":\"" + obj.getMMSI()
                         + "\",\"latitude\":" + latitude + ",\"longtitude\":" + longtitude
                         + ",\"distance\":" + (int) obj.getDistance()
-                        + ",\"isSimulation\":\"" + isSimulation + "\""
-                        + ",\"reportAge\":\"" + diffSec + "\""
+                        + ",\"isSimulation\":\"" + (obj.getSimulatedPosition() == null ? 0 : 1) + "\""
+                        + ",\"reportAge\":\"" + diffSecString + "\""
                         + ",\"navigationImage\":" + obj.getNavigationImage() + ",\"shipType\":" + obj.getShipType() + "}";
             }
             jsonResult = "{\"alert\":\"" + AISObjectList.getAlert().getAlertArea() + "\",\"aisList\":[" + jsonResult + "]}";
 
             PrintWriter out = response.getWriter();
             out.print(jsonResult);
-            System.out.println(current_time_str + " ; jsonResult: " + jsonResult);
+//            System.out.println(current_time_str + " ; jsonResult: " + jsonResult);
         } catch (Exception ex) {
         }
     }

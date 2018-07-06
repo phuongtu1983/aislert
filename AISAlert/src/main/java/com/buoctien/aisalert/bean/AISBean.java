@@ -6,7 +6,6 @@
 package com.buoctien.aisalert.bean;
 
 import com.buoctien.aisalert.geoposition.Coordinates;
-import dk.dma.enav.model.geometry.Position;
 
 /**
  *
@@ -16,17 +15,53 @@ public class AISBean {
 
     private String MMSI;
     private int navStatus;
-    private Position position;
-    private Coordinates simulatePosition;
+    private Coordinates position;
     private int shipType;
     private double distance;
     private int navigation;
-    private int navigationImage;
+    private int navigationImage; //0 = not set; -1 = left to right; 1 = right to left
     private String name;
     private String alertArea;
     private long milisec;
+    private long simulatedMilisec;
     private long sog;
     private int shouldSimulated;
+    private Coordinates simulatedPosition;
+
+    public AISBean() {
+        this.MMSI = "";
+        this.name = "";
+        this.navStatus = -1;
+        this.position = null;
+        this.shipType = -1;
+        this.navigation = 0;
+        this.navigationImage = 0;
+        this.alertArea = "";
+        this.distance = 0;
+        this.milisec = 0;
+        this.simulatedMilisec = 0;
+        this.sog = 0;
+        this.shouldSimulated = 0;
+        this.simulatedPosition = null;
+    }
+
+    public AISBean(String MMSI, int navStatus, Coordinates position, int shipType, String alertArea, double distance,
+            long milisec, int navigationImage, long sog) {
+        this.MMSI = MMSI;
+        this.name = "";
+        this.navStatus = navStatus;
+        this.position = position;
+        this.shipType = shipType;
+        this.navigation = 0;
+        this.navigationImage = navigationImage;
+        this.alertArea = alertArea;
+        this.distance = distance;
+        this.milisec = milisec;
+        this.simulatedMilisec = milisec;
+        this.sog = sog;
+        this.shouldSimulated = 1;
+        this.simulatedPosition = null;
+    }
 
     public String getMMSI() {
         return MMSI;
@@ -57,37 +92,6 @@ public class AISBean {
         this.MMSI = MMSI;
     }
 
-    public AISBean() {
-        this.MMSI = "";
-        this.name = "";
-        this.navStatus = -1;
-        this.position = null;
-        this.shipType = -1;
-        this.navigation = 0;
-        this.navigationImage = 0;
-        this.alertArea = "";
-        this.distance = 0;
-        this.milisec = 0;
-        this.sog = 0;
-        this.shouldSimulated = 0;
-    }
-
-    public AISBean(String MMSI, int navStatus, Position position, int shipType, String alertArea, double distance,
-             long milisec, int navigationImage, long sog, int shouldSimulated) {
-        this.MMSI = MMSI;
-        this.name = "";
-        this.navStatus = navStatus;
-        this.position = position;
-        this.shipType = shipType;
-        this.navigation = 0;
-        this.navigationImage = navigationImage;
-        this.alertArea = alertArea;
-        this.distance = distance;
-        this.milisec = milisec;
-        this.sog = sog;
-        this.shouldSimulated = shouldSimulated;
-    }
-
     public int getNavStatus() {
         return navStatus;
     }
@@ -96,13 +100,12 @@ public class AISBean {
         this.navStatus = navStatus;
     }
 
-    public Position getPosition() {
+    public Coordinates getPosition() {
         return position;
     }
 
-    public void setPosition(Position position) {
+    public void setPosition(Coordinates position) {
         this.position = position;
-        this.simulatePosition = null;
     }
 
     public int getShipType() {
@@ -153,20 +156,28 @@ public class AISBean {
         this.sog = sog;
     }
 
-    public Coordinates getSimulatePosition() {
-        return simulatePosition;
-    }
-
-    public void setSimulatePosition(Coordinates simulatePosition) {
-        this.simulatePosition = simulatePosition;
-    }
-
     public int getShouldSimulated() {
         return shouldSimulated;
     }
 
     public void setShouldSimulated(int shouldSimulated) {
         this.shouldSimulated = shouldSimulated;
+    }
+
+    public long getSimulatedMilisec() {
+        return simulatedMilisec;
+    }
+
+    public void setSimulatedMilisec(long simulatedMilisec) {
+        this.simulatedMilisec = simulatedMilisec;
+    }
+
+    public Coordinates getSimulatedPosition() {
+        return simulatedPosition;
+    }
+
+    public void setSimulatedPosition(Coordinates simulatedPosition) {
+        this.simulatedPosition = simulatedPosition;
     }
 
     public static final String RED_ALERT = "RED";

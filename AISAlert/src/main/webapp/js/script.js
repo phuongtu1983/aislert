@@ -230,3 +230,18 @@ function disableGetAISAjax() {
     }
     clearMarkers();
 }
+
+function runAISEmulatedDataAjax() {
+    $.ajax({
+        url: "RunAISEmulatedData",
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/json',
+        mimeType: 'application/json',
+
+        success: function (json) {
+        },
+        error: function (data, status, er) {
+        }
+    });
+}

@@ -22,16 +22,6 @@ public class CoordinatesCalculations {
     }
 
     public static double getDistanceBetweenTwoPoints(Coordinates c1, Coordinates c2) {
-//        double dLat = Math.toRadians(c2.getLatitude() - c1.getLatitude());
-//        double dLon = Math.toRadians(c2.getLongitude() - c1.getLongitude());
-//        double lat1 = Math.toRadians(c1.getLatitude());
-//        double lat2 = Math.toRadians(c2.getLatitude());
-//
-//        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
-//        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-//        double d = EARTH_RADIUS * c;
-//        return d;
-
         double φ1 = Math.toRadians(c1.getLatitude());
         double φ2 = Math.toRadians(c2.getLatitude());
         double Δφ = Math.toRadians(c2.getLatitude() - c1.getLatitude());
@@ -65,13 +55,6 @@ public class CoordinatesCalculations {
     public static Coordinates getNextPoint(Coordinates point, double bearing, double distance) {
         Coordinates result = null;
         try {
-//            double d_r = distance / EARTH_RADIUS;
-//            double lat = Math.asin(Math.sin(point.getLatitude()) * Math.cos(d_r)
-//                    + Math.cos(point.getLatitude()) * Math.sin(d_r) * Math.cos(bearing));
-//            double lng = point.getLongitude()
-//                    + Math.atan2(Math.cos(d_r) - Math.sin(point.getLatitude() * Math.sin(lat)),
-//                            Math.sin(bearing) * Math.sin(d_r) * Math.cos(point.getLatitude()));
-//            result = new Coordinates(lat, lng);
             double δ = distance / EARTH_RADIUS;
             double θ = Math.toRadians(bearing);
             double φ1 = Math.toRadians(point.getLatitude());

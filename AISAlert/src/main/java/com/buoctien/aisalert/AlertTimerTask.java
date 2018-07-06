@@ -10,6 +10,7 @@ import com.buoctien.aisalert.bean.AlertBean;
 import com.buoctien.aisalert.bean.StaticBean;
 import com.buoctien.aisalert.geoposition.Coordinates;
 import com.buoctien.aisalert.geoposition.CoordinatesCalculations;
+import com.buoctien.aisalert.util.AISUtil;
 import com.buoctien.aisalert.util.ArduinoUtil;
 import com.buoctien.aisalert.util.SerialUtil;
 import com.buoctien.aisalert.util.TimerUtil;
@@ -60,7 +61,7 @@ public class AlertTimerTask extends TimerTask {
             this.alertDataPort = initAlertPort();
         }
         if (alertDataPort == null) {
-//            return;
+            return;
         }
 
         if (StaticBean.IS_AUTO == 1) {
@@ -84,24 +85,49 @@ public class AlertTimerTask extends TimerTask {
             AISBean obj = null;
             Coordinates coor = null;
             long currentMilisec = new Date().getTime();
-            long diffSec = 0;
             int autoTime = StaticBean.AUTO_TIME;
-            double distance = 0;
-            Coordinates centerPoint = new Coordinates(StaticBean.AutoMidPointLatitude, StaticBean.AutoMidPointLongtitude);
+            double bearing = 0;
+            Coordinates centerPoint = new Coordinates(StaticBean.MidPointLatitude, StaticBean.MidPointLongtitude);
+            Coordinates autoCenterPoint = new Coordinates(StaticBean.AutoMidPointLatitude, StaticBean.AutoMidPointLongtitude);
+            Coordinates leftCenterPoint = new Coordinates(StaticBean.AutoLeftPointLatitude, StaticBean.AutoLeftPointLongtitude);
+            Coordinates rightCenterPoint = new Coordinates(StaticBean.AutoRightPointLatitude, StaticBean.AutoRightPointLongtitude);
+            Coordinates nextCenterPoint = null;
             for (int i = 0; i < list.size(); i++) {
                 obj = (AISBean) list.get(i);
                 if (obj.getShouldSimulated() == 0) {
                     continue;
                 }
-                diffSec = (currentMilisec - obj.getMilisec()) / 1000;
-                if (diffSec > autoTime) {
-                    distance = getDistance(obj.getSimulatePosition() == null ? new Coordinates(obj.getPosition().getLatitude(), obj.getPosition().getLongitude()) : obj.getSimulatePosition());
-                    obj.setDistance(distance);
-                    coor = new Coordinates(obj.getPosition().getLatitude(), obj.getPosition().getLongitude());
-                    double bearing = CoordinatesCalculations.getBearing(coor, centerPoint);
-                    Coordinates nextPoint = CoordinatesCalculations.getNextPoint(coor, bearing, obj.getSog() * StaticBean.KNOT * diffSec);
+                if ((currentMilisec - obj.getMilisec()) / 1000 > autoTime) {
+                    if (obj.getSimulatedPosition() == null) {
+                        coor = new Coordinates(obj.getPosition().getLatitude(), obj.getPosition().getLongitude());
+                    } else {
+                        coor = new Coordinates(obj.getSimulatedPosition().getLatitude(), obj.getSimulatedPosition().getLongitude());
+                    }
+                    if (obj.getNavigationImage() == 0) {
+                        nextCenterPoint = autoCenterPoint;
+                    } else if (obj.getNavigationImage() > 0) {// from right to left
+//                        if (coor.getLongitude() < StaticBean.MidPointLongtitude) { // left side
+                            nextCenterPoint = leftCenterPoint;
+//                        } else { // right side
+//                            nextCenterPoint = autoCenterPoint;
+//                        }
+                    } else { // from left to right
+//                        if (coor.getLongitude() < StaticBean.MidPointLongtitude) { // left side
+//                            nextCenterPoint = autoCenterPoint;
+//                        } else { // right side
+                            nextCenterPoint = rightCenterPoint;
+//                        }
+                    }
+                    bearing = CoordinatesCalculations.getBearing(coor, nextCenterPoint);
+                    Coordinates nextPoint = CoordinatesCalculations.getNextPoint(coor, bearing, obj.getSog() * StaticBean.KNOT * (currentMilisec - obj.getSimulatedMilisec()) / 1000);
                     if (nextPoint != null) {
-                        obj.setSimulatePosition(nextPoint);
+                        System.out.println("coor: " + coor.getLatitude() + ";" + coor.getLongitude());
+                        System.out.println("nextPoint: " + nextPoint.getLatitude() + ";" + nextPoint.getLongitude());
+                        System.out.println("old distance: " + obj.getDistance());
+                        obj.setDistance(getDistance(coor, centerPoint));
+                        System.out.println("new distance: " + obj.getDistance());
+                        obj.setSimulatedPosition(nextPoint);
+                        AISUtil.hanldeAisMessage(obj.getMMSI(), obj, true);
                     }
                 }
             }
@@ -110,9 +136,8 @@ public class AlertTimerTask extends TimerTask {
         }
     }
 
-    private double getDistance(Coordinates newPost) {
-        return CoordinatesCalculations.getDistanceBetweenTwoPoints(
-                new Coordinates(StaticBean.AutoMidPointLatitude, StaticBean.AutoMidPointLongtitude), newPost);
+    private double getDistance(Coordinates newPost, Coordinates centerPoint) {
+        return CoordinatesCalculations.getDistanceBetweenTwoPoints(centerPoint, newPost);
     }
 
 }

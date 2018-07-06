@@ -18,7 +18,10 @@ public class AISObjectList {
 
     private final static ArrayList aisList = new ArrayList();
 
-    public static void addObject(AISBean bean) {
+    public static ArrayList emulatorAISData = new ArrayList();
+    public static int emulatedDataIndex = 0;
+
+    public static synchronized void addObject(AISBean bean) {
         AISBean obj = null;
         for (int i = 0; i < aisList.size(); i++) {
             obj = (AISBean) aisList.get(i);
@@ -30,7 +33,7 @@ public class AISObjectList {
         aisList.add(bean);
     }
 
-    public static void removeObject(AISBean bean) {
+    public static synchronized void removeObject(AISBean bean) {
         AISBean obj = null;
         for (int i = 0; i < aisList.size(); i++) {
             obj = (AISBean) aisList.get(i);
@@ -41,7 +44,7 @@ public class AISObjectList {
         }
     }
 
-    public static boolean isContains(String key) {
+    public static synchronized boolean isContains(String key) {
         AISBean obj = null;
         for (int i = 0; i < aisList.size(); i++) {
             obj = (AISBean) aisList.get(i);
@@ -52,7 +55,7 @@ public class AISObjectList {
         return false;
     }
 
-    public static AISBean get(String key) {
+    public static synchronized AISBean get(String key) {
         AISBean obj = null;
         for (int i = 0; i < aisList.size(); i++) {
             obj = (AISBean) aisList.get(i);
@@ -63,11 +66,11 @@ public class AISObjectList {
         return null;
     }
 
-    public static ArrayList getList() {
+    public static synchronized ArrayList getList() {
         return aisList;
     }
 
-    public static AlertBean getAlert() {
+    public static synchronized AlertBean getAlert() {
         AISBean obj = null;
         AlertBean resultBean = new AlertBean();
         long currentMilisec = new Date().getTime();
@@ -102,7 +105,7 @@ public class AISObjectList {
         return resultBean;
     }
 
-    public static void destroyObjects() {
+    public static synchronized void destroyObjects() {
         if (aisList == null) {
             return;
         }

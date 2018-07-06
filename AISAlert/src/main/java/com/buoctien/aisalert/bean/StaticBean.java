@@ -20,6 +20,12 @@ public class StaticBean {
 
     public static final double AutoMidPointLatitude = 10.664123;
     public static double AutoMidPointLongtitude = 106.796672;
+    
+    public static final double AutoLeftPointLatitude = 10.67088418169;
+    public static double AutoLeftPointLongtitude = 106.785091073;
+    
+    public static final double AutoRightPointLatitude = 10.6576764333;
+    public static double AutoRightPointLongtitude = 106.806238533;
 
     public static final int OutsideRadius = 2000;
     public static final int YellowRadius = 520;

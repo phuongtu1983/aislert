@@ -42,6 +42,7 @@ and open the template in the editor.
                     <span id="alertSpan">Alert type</span>
                     <button onclick="enableGetAISAjax()">Turn on map</button> 
                     <button onclick="disableGetAISAjax()">Turn off map</button> 
+                    <button onclick="runAISEmulatedDataAjax()">Run simulated data</button> 
                 </td>
             </tr>
             <tr><td><p id="map"></p></td></tr>
