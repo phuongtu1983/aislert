@@ -16,6 +16,8 @@ import dk.dma.ais.message.AisMessage1;
 import dk.dma.ais.message.AisPosition;
 import dk.dma.ais.reader.AisReader;
 import gnu.io.SerialPort;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.function.Consumer;
 
 /**
@@ -37,9 +39,9 @@ public class AISThread extends Thread {
     @Override
     public void run() {
         try {
-            runFromSerialPort();
-            this.stoped = true;
-//            createEmulatorData();
+//            runFromSerialPort();
+//            this.stoped = true;
+            createEmulatorData();
         } catch (Exception ex) {
             this.stoped = true;
             System.out.println("run : " + ex);
@@ -86,6 +88,9 @@ public class AISThread extends Thread {
         try {
             AISBean aisBean = AISUtil.acceptAisMessage(aisMessage);
             AISUtil.hanldeAisMessage(aisMessage.getUserId() + "", aisBean, false);
+//            if (bean != null) {
+//                writeAISDataToFile(bean);
+//            }
         } catch (Exception ex) {
             System.out.println("aisMessageHandle : " + ex);
             FileUtil.writeToFile(writtenFileName, "aisMessageHandle : " + ex);
@@ -215,5 +220,36 @@ public class AISThread extends Thread {
         aisMessage.setPos(pos);
         aisMessage.setSog(20);
         AISObjectList.emulatorAISData.add(aisMessage);
+    }
+
+    private void writeAISDataToFile(AISBean bean) {
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd_HH:mm:SS");
+            String strCurrDate = formatter.format(new java.util.Date());
+            String str = "";
+            str += strCurrDate + "\t";
+            str += "MMSI:" + bean.getMMSI() + "\t";
+            str += "ShipType:" + bean.getShipType() + "\t";
+            str += "Position:" + bean.getPosition().getLatitude() + "," + bean.getPosition().getLongitude() + "\t";
+            str += "Distance:" + bean.getDistance() + "\t";
+            str += "Navigation:" + (bean.getNavigationImage() == 0 ? "Not set" : bean.getNavigationImage() > 0 ? "VT to SG" : "SG to VT") + "\t";
+            str += "Alert:" + bean.getAlertArea() + "\t";
+            str += "Speed:" + bean.getSog() + "\t";
+            long diffSec = (new Date().getTime() - bean.getMilisec()) / 1000;
+            String diffSecString = "";
+            if (diffSec < 60) {
+                diffSecString = diffSec + " s";
+            } else {
+                diffSecString = (int) diffSec / 60 + " min";
+                if (diffSec > 0) {
+                    diffSecString += " " + diffSec % 60 + " s";
+                }
+            }
+            str += "ReportAge:" + diffSecString + "\t";
+            FileUtil.writeToFile(writtenFileName, str);
+        } catch (Exception ex) {
+            System.out.println("writeAISDataToFile : " + ex);
+            FileUtil.writeToFile(writtenFileName, "writeAISDataToFile : " + ex);
+        }
     }
 }

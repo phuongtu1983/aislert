@@ -70,7 +70,7 @@ public class PublicObjects {
                 alertTimer = null;
             }
             AISObjectList.destroyObjects();
-//            AISObjectList.emulatorAISData.clear();
+            AISObjectList.emulatorAISData.clear();
             System.out.println("On Load Servlet stopped");
         } catch (Exception ex) {
 

@@ -53,7 +53,6 @@ public class AISMapJsonServlet extends HttpServlet {
             ArrayList list = AISObjectList.getList();
             AISBean obj = null;
             String jsonResult = "";
-            long currentMilisec = new Date().getTime();
             long diffSec = 0;
             String diffSecString = "";
 //            int[] allowNavigation = {0, 7, 8, 9, 10, 14};
@@ -63,7 +62,7 @@ public class AISMapJsonServlet extends HttpServlet {
 //                    continue;
 //                }
                 String latitude = "", longtitude = "";
-                diffSec = (currentMilisec - obj.getMilisec()) / 1000;
+                diffSec = (new Date().getTime() - obj.getMilisec()) / 1000;
                 if (diffSec < 60) {
                     diffSecString = diffSec + " s";
                 } else {

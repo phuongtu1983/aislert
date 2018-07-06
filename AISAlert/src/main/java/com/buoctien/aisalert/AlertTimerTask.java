@@ -61,7 +61,7 @@ public class AlertTimerTask extends TimerTask {
             this.alertDataPort = initAlertPort();
         }
         if (alertDataPort == null) {
-            return;
+//            return;
         }
 
         if (StaticBean.IS_AUTO == 1) {
@@ -121,11 +121,7 @@ public class AlertTimerTask extends TimerTask {
                     bearing = CoordinatesCalculations.getBearing(coor, nextCenterPoint);
                     Coordinates nextPoint = CoordinatesCalculations.getNextPoint(coor, bearing, obj.getSog() * StaticBean.KNOT * (currentMilisec - obj.getSimulatedMilisec()) / 1000);
                     if (nextPoint != null) {
-                        System.out.println("coor: " + coor.getLatitude() + ";" + coor.getLongitude());
-                        System.out.println("nextPoint: " + nextPoint.getLatitude() + ";" + nextPoint.getLongitude());
-                        System.out.println("old distance: " + obj.getDistance());
                         obj.setDistance(getDistance(coor, centerPoint));
-                        System.out.println("new distance: " + obj.getDistance());
                         obj.setSimulatedPosition(nextPoint);
                         AISUtil.hanldeAisMessage(obj.getMMSI(), obj, true);
                     }
