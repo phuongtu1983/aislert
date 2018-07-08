@@ -106,6 +106,7 @@ public class AISBean {
 
     public void setPosition(Coordinates position) {
         this.position = position;
+        this.simulatedPosition = null;
     }
 
     public int getShipType() {

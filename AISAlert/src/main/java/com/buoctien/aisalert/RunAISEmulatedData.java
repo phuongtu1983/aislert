@@ -56,8 +56,9 @@ public class RunAISEmulatedData extends HttpServlet {
     private void handleEmulateData(String configFileName) {
         if (AISObjectList.emulatedDataIndex < AISObjectList.emulatorAISData.size()) {
             AisMessage aisMessage = (AisMessage) AISObjectList.emulatorAISData.get(AISObjectList.emulatedDataIndex++);
-            AISBean aisBean = AISUtil.acceptAisMessage(aisMessage);
-            AISUtil.hanldeAisMessage(aisMessage.getUserId() + "", aisBean, false);
+//            AISBean aisBean = AISUtil.acceptAisMessage(aisMessage);
+            AISUtil.acceptAisMessage(aisMessage, false);
+//            AISUtil.hanldeAisMessage(aisMessage.getUserId() + "", aisBean, false);
 //            if (bean != null) {
 //                writeAISDataToFile(configFileName, bean);
 //            }

@@ -53,7 +53,7 @@ public class AISUtil {
         return null;
     }
 
-    public static AISBean acceptAisMessage(AisMessage aisMessage) {
+    public static AISBean acceptAisMessage(AisMessage aisMessage, boolean isSimulated) {
         AISBean bean = new AISBean();
         bean.setMMSI(aisMessage.getUserId() + "");
         try {
@@ -71,6 +71,7 @@ public class AISUtil {
                 }
                 AISObjectList.removeObject(oldBean);
             }
+            hanldeAisMessage(aisMessage.getUserId() + "", bean, isSimulated);
         } catch (Exception ex) {
             System.out.println("acceptAisMessage : " + ex);
         }

@@ -106,17 +106,9 @@ public class AlertTimerTask extends TimerTask {
                     if (obj.getNavigationImage() == 0) {
                         nextCenterPoint = autoCenterPoint;
                     } else if (obj.getNavigationImage() > 0) {// from right to left
-//                        if (coor.getLongitude() < StaticBean.MidPointLongtitude) { // left side
-                            nextCenterPoint = leftCenterPoint;
-//                        } else { // right side
-//                            nextCenterPoint = autoCenterPoint;
-//                        }
+                        nextCenterPoint = leftCenterPoint;
                     } else { // from left to right
-//                        if (coor.getLongitude() < StaticBean.MidPointLongtitude) { // left side
-//                            nextCenterPoint = autoCenterPoint;
-//                        } else { // right side
-                            nextCenterPoint = rightCenterPoint;
-//                        }
+                        nextCenterPoint = rightCenterPoint;
                     }
                     bearing = CoordinatesCalculations.getBearing(coor, nextCenterPoint);
                     Coordinates nextPoint = CoordinatesCalculations.getNextPoint(coor, bearing, obj.getSog() * StaticBean.KNOT * (currentMilisec - obj.getSimulatedMilisec()) / 1000);

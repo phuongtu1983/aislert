@@ -6,6 +6,7 @@
 package com.buoctien.aisalert;
 
 import com.buoctien.aisalert.bean.AISBean;
+import com.buoctien.aisalert.bean.StaticBean;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -61,6 +62,9 @@ public class AISMapJsonServlet extends HttpServlet {
 //                if (!ArrayUtils.contains(allowNavigation, obj.getNavStatus())) {
 //                    continue;
 //                }
+                if (obj.getDistance() > StaticBean.DisplayRadius) {
+                    continue;
+                }
                 String latitude = "", longtitude = "";
                 diffSec = (new Date().getTime() - obj.getMilisec()) / 1000;
                 if (diffSec < 60) {

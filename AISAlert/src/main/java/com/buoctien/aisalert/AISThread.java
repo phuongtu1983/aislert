@@ -84,10 +84,10 @@ public class AISThread extends Thread {
         }
     }
 
-    private void aisMessageHandle(AisMessage aisMessage) {
+    private synchronized void aisMessageHandle(AisMessage aisMessage) {
         try {
-            AISBean aisBean = AISUtil.acceptAisMessage(aisMessage);
-            AISUtil.hanldeAisMessage(aisMessage.getUserId() + "", aisBean, false);
+//            AISBean aisBean = AISUtil.acceptAisMessage(aisMessage, false);
+            AISUtil.acceptAisMessage(aisMessage, false);
 //            if (bean != null) {
 //                writeAISDataToFile(bean);
 //            }
