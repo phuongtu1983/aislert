@@ -66,7 +66,7 @@ function success()
      drawCircle(10.664600020294783, 106.79722331065, 314);
      drawCircle(10.664184868961435, 106.79679543725299, 314);
      */
-    drawCircle(10.663402010340304, 106.79608941078186, 2000);
+    drawCircle(10.663402010340304, 106.79608941078186, 1000);
     markers = [];
     enableGetAISAjax();
 }
@@ -188,7 +188,6 @@ function setMapOnAll(map) {
 }
 
 function drawPolygon(triangleCoords, color) {
-    // Construct the polygon.
     new google.maps.Polygon({
         paths: triangleCoords,
         map: map,

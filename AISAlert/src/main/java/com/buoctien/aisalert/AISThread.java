@@ -29,7 +29,6 @@ import gnu.io.SerialPort;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.function.Consumer;
-import org.apache.commons.lang3.ArrayUtils;
 
 /**
  *

@@ -49,7 +49,6 @@ public class MapServlet extends HttpServlet {
             RequestDispatcher dispatcher = request.getRequestDispatcher("map.jsp");
             dispatcher.forward(request, response);
         } catch (Exception ex) {
-            // I/O error
             System.out.print("Exception: " + ex.toString());
         }
     }

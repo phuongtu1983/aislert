@@ -14,7 +14,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.ArrayUtils;
 
 /**
  *
@@ -80,7 +79,7 @@ public class AISMapJsonServlet extends HttpServlet {
 
             PrintWriter out = response.getWriter();
             out.print(jsonResult);
-            System.out.println("jsonResult: " + jsonResult);
+//            System.out.println("jsonResult: " + jsonResult);
         } catch (Exception ex) {
         }
     }
