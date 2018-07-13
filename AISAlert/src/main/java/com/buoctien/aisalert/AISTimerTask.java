@@ -53,7 +53,7 @@ public class AISTimerTask extends TimerTask {
                     dataPort = SerialUtil.initAlertPort(configFileName, "ais_port", "ais_baudrate");
                 }
                 if (dataPort == null) {
-//                    return;
+                    return;
                 }
                 aisThread = new AISThread(writtenFileName, dataPort);
                 aisThread.start();

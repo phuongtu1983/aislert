@@ -19,7 +19,6 @@ import javax.servlet.ServletContext;
 public class PublicObjects {
 
     private static SerialPort aisDataPort = null;
-
     private static AISTimerTask aisTimer = null;
     private static AlertTimerTask alertTimer = null;
 
@@ -70,7 +69,7 @@ public class PublicObjects {
                 alertTimer = null;
             }
             AISObjectList.destroyObjects();
-            AISObjectList.emulatorAISData.clear();
+//            AISObjectList.emulatorAISData.clear();
             System.out.println("On Load Servlet stopped");
         } catch (Exception ex) {
 
@@ -80,8 +79,7 @@ public class PublicObjects {
     public static boolean isTurnOn() {
         if (aisTimer == null || alertTimer == null) {
             return false;
-        } else {
-            return true;
         }
+        return true;
     }
 }

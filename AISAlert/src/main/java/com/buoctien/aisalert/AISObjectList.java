@@ -18,8 +18,8 @@ public class AISObjectList {
 
     private final static ArrayList aisList = new ArrayList();
 
-    public static ArrayList emulatorAISData = new ArrayList();
-    public static int emulatedDataIndex = 0;
+//    public static ArrayList emulatorAISData = new ArrayList();
+//    public static int emulatedDataIndex = 0;
 
     public static synchronized void addObject(AISBean bean) {
         AISBean obj = null;

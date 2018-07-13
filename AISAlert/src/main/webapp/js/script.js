@@ -194,7 +194,6 @@ function setMapOnAll(map) {
 }
 
 function drawPolygon(triangleCoords, color) {
-    // Construct the polygon.
     new google.maps.Polygon({
         paths: triangleCoords,
         map: map,
@@ -239,9 +238,7 @@ function runAISEmulatedDataAjax() {
         contentType: 'application/json',
         mimeType: 'application/json',
 
-        success: function (json) {
-        },
-        error: function (data, status, er) {
-        }
+        success: function (json) {},
+        error: function (data, status, er) {}
     });
 }

@@ -61,7 +61,7 @@ public class AlertTimerTask extends TimerTask {
             this.alertDataPort = initAlertPort();
         }
         if (alertDataPort == null) {
-//            return;
+            return;
         }
 
         if (StaticBean.IS_AUTO == 1) {
@@ -127,5 +127,4 @@ public class AlertTimerTask extends TimerTask {
     private double getDistance(Coordinates newPost, Coordinates centerPoint) {
         return CoordinatesCalculations.getDistanceBetweenTwoPoints(centerPoint, newPost);
     }
-
 }

@@ -39,9 +39,9 @@ public class AISThread extends Thread {
     @Override
     public void run() {
         try {
-//            runFromSerialPort();
-//            this.stoped = true;
-            createEmulatorData();
+            runFromSerialPort();
+            this.stoped = true;
+//            createEmulatorData();
         } catch (Exception ex) {
             this.stoped = true;
             System.out.println("run : " + ex);
@@ -86,11 +86,10 @@ public class AISThread extends Thread {
 
     private synchronized void aisMessageHandle(AisMessage aisMessage) {
         try {
-//            AISBean aisBean = AISUtil.acceptAisMessage(aisMessage, false);
-            AISUtil.acceptAisMessage(aisMessage, false);
-//            if (bean != null) {
-//                writeAISDataToFile(bean);
-//            }
+            AISBean aisBean = AISUtil.acceptAisMessage(aisMessage, false);
+            if (aisBean != null) {
+//                writeAISDataToFile(aisBean);
+            }
         } catch (Exception ex) {
             System.out.println("aisMessageHandle : " + ex);
             FileUtil.writeToFile(writtenFileName, "aisMessageHandle : " + ex);
@@ -219,7 +218,7 @@ public class AISThread extends Thread {
         pos.setLongitude(Math.round(lon * 10000.0 * 60.0));
         aisMessage.setPos(pos);
         aisMessage.setSog(20);
-        AISObjectList.emulatorAISData.add(aisMessage);
+//        AISObjectList.emulatorAISData.add(aisMessage);
     }
 
     private void writeAISDataToFile(AISBean bean) {

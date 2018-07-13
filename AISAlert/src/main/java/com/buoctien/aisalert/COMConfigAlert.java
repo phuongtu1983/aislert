@@ -74,7 +74,6 @@ public class COMConfigAlert extends HttpServlet {
             RequestDispatcher dispatcher = request.getRequestDispatcher("com_config.jsp");
             dispatcher.forward(request, response);
         } catch (Exception ex) {
-            // I/O error
             System.out.print("Exception: " + ex.toString());
         }
     }
